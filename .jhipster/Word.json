@@ -1,0 +1,29 @@
+{
+    "relationships": [
+        {
+            "relationshipId": 1,
+            "relationshipName": "language",
+            "otherEntityName": "language",
+            "relationshipType": "many-to-one",
+            "otherEntityField": "language"
+        }
+    ],
+    "fields": [
+        {
+            "fieldId": 1,
+            "fieldName": "word",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldId": 2,
+            "fieldName": "original_word",
+            "fieldType": "String"
+        }
+    ],
+    "changelogDate": "20151224220157",
+    "dto": "no",
+    "pagination": "pagination"
+}

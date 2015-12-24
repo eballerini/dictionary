@@ -1,0 +1,46 @@
+
+<div>
+    <h2><span>Word</span> {{word.id}}</h2>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Field</th>
+                <th>Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>
+                    <span>Word</span>
+                </td>
+                <td>
+                    <span class="form-control-static">{{word.word}}</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span>Original word</span>
+                </td>
+                <td>
+                    <span class="form-control-static">{{word.original_word}}</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span>language</span>
+                </td>
+                <td>
+                    <a class="form-control-static" ui-sref="language.detail({id:word.language.id})">{{word.language.language}}</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <button type="submit"
+            onclick="window.history.back()"
+            class="btn btn-info">
+        <span class="glyphicon glyphicon-arrow-left"></span>&nbsp;<span> Back</span>
+    </button>
+</div>

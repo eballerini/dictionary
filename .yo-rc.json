@@ -1,0 +1,24 @@
+{
+  "generator-jhipster": {
+    "baseName": "dictionary",
+    "packageName": "org.dictionary",
+    "packageFolder": "org/dictionary",
+    "authenticationType": "session",
+    "hibernateCache": "ehcache",
+    "clusteredHttpSession": "no",
+    "websocket": "no",
+    "databaseType": "sql",
+    "devDatabaseType": "postgresql",
+    "prodDatabaseType": "postgresql",
+    "searchEngine": "elasticsearch",
+    "useSass": false,
+    "buildTool": "maven",
+    "frontendBuilder": "grunt",
+    "enableTranslation": false,
+    "enableSocialSignIn": false,
+    "rememberMeKey": "88cd1f670f2474bd0eb47a6fc0fc03b7fc34b31d",
+    "testFrameworks": [
+      "gatling"
+    ]
+  }
+}

@@ -1,0 +1,50 @@
+
+<form name="editForm" role="form" novalidate ng-submit="save()">
+
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
+                ng-click="clear()">&times;</button>
+        <h4 class="modal-title" id="myTranslationLabel">Create or edit a Translation</h4>
+    </div>
+    <div class="modal-body">
+        <jh-alert-error></jh-alert-error>
+        <div class="form-group">
+            <label for="id">ID</label>
+            <input type="text" class="form-control" id="id" name="id"
+                    ng-model="translation.id" readonly />
+        </div>
+        <div class="form-group">
+            <label for="field_usage">Usage</label>
+            <input type="text" class="form-control" name="usage" id="field_usage"
+                    ng-model="translation.usage"
+                     />
+        </div>
+        <div class="form-group">
+            <label for="field_priority">Priority</label>
+            <input type="number" class="form-control" name="priority" id="field_priority"
+                    ng-model="translation.priority"
+                     />
+        </div>
+
+        <div class="form-group">
+            <label for="field_from_word">From word</label>
+            <select class="form-control" id="field_from_word" name="from_word" ng-model="translation.from_word" ng-options="word as word.word for word in words track by word.id">
+                <option value=""></option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="field_to_word">To word</label>
+            <select class="form-control" id="field_to_word" name="to_word" ng-model="translation.to_word" ng-options="word as word.word for word in words track by word.id">
+                <option value=""></option>
+            </select>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="clear()">
+            <span class="glyphicon glyphicon-ban-circle"></span>&nbsp;<span>Cancel</span>
+        </button>
+        <button type="submit" ng-disabled="editForm.$invalid || isSaving" class="btn btn-primary">
+            <span class="glyphicon glyphicon-save"></span>&nbsp;<span>Save</span>
+        </button>
+    </div>
+</form>

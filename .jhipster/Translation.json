@@ -1,0 +1,33 @@
+{
+    "relationships": [
+        {
+            "relationshipId": 1,
+            "relationshipName": "from_word",
+            "otherEntityName": "word",
+            "relationshipType": "many-to-one",
+            "otherEntityField": "word"
+        },
+        {
+            "relationshipId": 2,
+            "relationshipName": "to_word",
+            "otherEntityName": "word",
+            "relationshipType": "many-to-one",
+            "otherEntityField": "word"
+        }
+    ],
+    "fields": [
+        {
+            "fieldId": 1,
+            "fieldName": "usage",
+            "fieldType": "String"
+        },
+        {
+            "fieldId": 2,
+            "fieldName": "priority",
+            "fieldType": "Integer"
+        }
+    ],
+    "changelogDate": "20151224221856",
+    "dto": "no",
+    "pagination": "pagination"
+}

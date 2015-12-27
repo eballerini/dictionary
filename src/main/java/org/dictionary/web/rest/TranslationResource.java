@@ -1,9 +1,21 @@
 package org.dictionary.web.rest;
 
-import com.codahale.metrics.annotation.Timed;
+import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import javax.inject.Inject;
+
+import org.dictionary.api.TranslationAPI;
 import org.dictionary.domain.Translation;
 import org.dictionary.repository.TranslationRepository;
 import org.dictionary.repository.search.TranslationSearchRepository;
+import org.dictionary.service.TranslationService;
 import org.dictionary.web.rest.util.HeaderUtil;
 import org.dictionary.web.rest.util.PaginationUtil;
 import org.slf4j.Logger;
@@ -14,17 +26,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.inject.Inject;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
-import static org.elasticsearch.index.query.QueryBuilders.*;
+import com.codahale.metrics.annotation.Timed;
 
 /**
  * REST controller for managing Translation.
@@ -40,6 +48,9 @@ public class TranslationResource {
 
     @Inject
     private TranslationSearchRepository translationSearchRepository;
+
+    @Inject
+    private TranslationService translationService;
 
     /**
      * POST  /translations -> Create a new translation.
@@ -136,4 +147,15 @@ public class TranslationResource {
             .stream(translationSearchRepository.search(queryStringQuery(query)).spliterator(), false)
             .collect(Collectors.toList());
     }
+    
+    @RequestMapping(value = "/translations/words/{wordId}/languages/{toLanguageId}",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @Timed
+    public List<TranslationAPI> findTranslations(@PathVariable("wordId") Long wordId, 
+            @PathVariable("toLanguageId") Long toLanguageId) {
+        
+        return translationService.findTranslations(wordId, toLanguageId);
+    }
+        
 }

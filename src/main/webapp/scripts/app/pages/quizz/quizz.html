@@ -1,0 +1,55 @@
+<div>
+    <h2>Quizz</h2>
+    
+    <div>
+        
+        <form name="quizzForm" role="form" novalidate ng-submit="submit()" show-validation>
+            <div>
+                <span>Select languages: from </span>
+                <select  id="from_language" name="from_language" ng-model="from_language" ng-options="language as language.language for language in languages track by language.id">
+                </select>
+
+                to
+
+                <select  id="to_language" name="to_language" ng-model="to_language" ng-options="language as language.language for language in languages track by language.id">
+                </select>
+
+                </span>&nbsp;<span>
+
+                <button type="submit" class="btn btn-primary">
+                    <span>Go</span>
+                </button>
+
+                <span ng-if="translations">
+                    <a href="#" type="button" class="btn btn-primary" ng-click="showTranslations()" ng-if="!show">
+                        <span>Show translations</span>
+                    </a>
+                    <a href="#" type="button" class="btn btn-primary" ng-click="hideTranslations()" ng-if="show">
+                        <span>Hide translations</span>
+                    </a>
+                </span>
+
+                <div ng-if="loaded">
+                    <span class="label label-default">{{word.word}}</span>
+                </div>
+
+                <div ng-if="errorLoading" class="alert alert-danger">
+                    <span>Could not find any words in {{from_language.language}}</span>
+                </div>
+
+                <div ng-if="show">
+                    <ul>
+                        <li ng-repeat="translation in translations track by translation.id">
+                            <div>{{translation.toWord.word}}</div>
+                            <div>Usage: {{translation.usage}}</div>
+
+                        </li>
+                    </ul>
+                <div>
+                   
+            </div>
+
+        </form>
+
+    </div>
+</div>

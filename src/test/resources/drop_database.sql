@@ -1,0 +1,1 @@
+drop database dictionary_dev;

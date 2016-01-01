@@ -1,0 +1,6 @@
+cantoneseXXX, english, usage
+gwong2 dung1 wa1, Cantonese
+dung1, east,
+jo2, left
+ge3, 's, (person) 's (possessive)
+tung4 maai4, and, maai4 is optional

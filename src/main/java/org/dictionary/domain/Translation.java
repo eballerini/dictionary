@@ -34,9 +34,11 @@ public class Translation implements Serializable {
     @Column(name = "priority")
     private Integer priority;
 
+    // TODO rename field, getter and setter
     @ManyToOne
     private Word from_word;
 
+    // TODO rename field, getter and setter
     @ManyToOne
     private Word to_word;
 

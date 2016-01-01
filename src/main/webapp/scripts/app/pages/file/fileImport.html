@@ -1,0 +1,40 @@
+<div>
+    <h2>Import file</h2>
+    
+    <div>
+        
+        <form name="importForm" role="form" ng-submit="submit()">
+            <div>
+                <div>Select file to import</div>
+                <span class="btn btn-xs btn-primary" ngf-select ng-model="file" name="file" ng-click="resetStatus()">Browse</span>
+                <span ng-if="file">{{file.name}}
+                </span>
+                <div ng-if="file">
+                    <br/>
+                    <button type="submit" class="btn btn-xs btn-primary">
+                        <span>Upload</span>
+                    </button>
+                </div>
+                
+                <br/>
+
+                <div ng-if="success" class="alert alert-success">
+                    Upload completed
+                    <br/>
+                    Number of words created: {{numWordsCreated}}<br/>
+                    Number of translations created: {{numTranslationsCreated}}<br/>
+                    Number of words that already existed (could have been created as part of this import): {{numWordsNotCreated}}<br/>
+                    Number of translations that already existed (could have been created as part of this import): {{numTranslationsNotCreated}}<br/>
+                </div>
+                
+                <div ng-if="failure" class="alert alert-danger">
+                    An error occurred. Your file could not be uploaded.<br/>
+                    {{message}}
+                </div>
+               
+            </div>
+
+        </form>
+
+    </div>
+</div>

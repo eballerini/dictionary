@@ -36,6 +36,7 @@ public class Word implements Serializable {
     @Column(name = "original_word")
     private String original_word;
 
+    @NotNull
     @ManyToOne
     private Language language;
 

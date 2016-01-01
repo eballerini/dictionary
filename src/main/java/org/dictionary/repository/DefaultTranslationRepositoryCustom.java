@@ -39,4 +39,18 @@ public class DefaultTranslationRepositoryCustom implements TranslationRepository
         q.setParameter("toLanguageId", toLanguageId);
         return q.getResultList();
     }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Translation findTranslation(Long wordId1, Long wordId2) {
+        // ideally we need 2 constraints to that (fromWord, toWord) is unique
+        Query q = em.createQuery("from Translation t where t.from_word.id = :wordId1 and t.to_word.id = :wordId2");
+        q.setParameter("wordId1", wordId1);
+        q.setParameter("wordId2", wordId2);
+        List<Translation> t = q.getResultList();
+        if (t.isEmpty()) {
+            return null;
+        }
+        return (Translation) t.get(0);
+    }
 }

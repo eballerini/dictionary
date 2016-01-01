@@ -1,0 +1,10 @@
+cantonese, english, usage
+faat3 man4/2, French (language),
+jung1 man4/2, Chinese (language),
+ying1 man4/2, English (language),
+gwong2 dung1 wa1, Cantonese,
+dung1, east,
+naam4, south,
+aha, test,
+dskjfgkd, test,
+aha, HHGB, 

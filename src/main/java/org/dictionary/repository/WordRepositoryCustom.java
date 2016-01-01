@@ -9,4 +9,5 @@ public interface WordRepositoryCustom {
 
     Word loadWord(long id, int offset);
 
+    Word loadWord(String word, Long languageId);
 }

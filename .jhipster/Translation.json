@@ -2,14 +2,14 @@
     "relationships": [
         {
             "relationshipId": 1,
-            "relationshipName": "from_word",
+            "relationshipName": "fromWord",
             "otherEntityName": "word",
             "relationshipType": "many-to-one",
             "otherEntityField": "word"
         },
         {
             "relationshipId": 2,
-            "relationshipName": "to_word",
+            "relationshipName": "toWord",
             "otherEntityName": "word",
             "relationshipType": "many-to-one",
             "otherEntityField": "word"

@@ -44,13 +44,13 @@ public class DefaultTranslationService implements TranslationService {
 
         List<TranslationAPI> translationsAPI = new ArrayList<TranslationAPI>();
         for (Translation translation: translationsFromWord) {
-            WordAPI wordAPI = WordTranslator.toAPI(translation.getTo_word());
+            WordAPI wordAPI = WordTranslator.toAPI(translation.getToWord());
             TranslationAPI translationAPI = TranslationTranslator.toAPI(wordAPI, translation);
             translationsAPI.add(translationAPI);
         }
 
         for (Translation translation: translationsToWord) {
-            WordAPI wordAPI = WordTranslator.toAPI(translation.getFrom_word());
+            WordAPI wordAPI = WordTranslator.toAPI(translation.getFromWord());
             TranslationAPI translationAPI = TranslationTranslator.toAPI(wordAPI, translation);
             translationsAPI.add(translationAPI);
         }

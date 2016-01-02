@@ -98,8 +98,8 @@ public class DefaultFileImportService implements FileImportService {
         // create translation if it doesn't exist yet
         if (t == null) {
             t = new Translation();
-            t.setFrom_word(word1);
-            t.setTo_word(word2);
+            t.setFromWord(word1);
+            t.setToWord(word2);
             t.setUsage(usage);
             log.debug("translation between word {} and {} doesn't exist yet. Creating it", word1, word2);
             translationRepository.save(t);

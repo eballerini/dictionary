@@ -28,13 +28,13 @@
 
         <div class="form-group">
             <label for="field_from_word">From word</label>
-            <select class="form-control" id="field_from_word" name="from_word" ng-model="translation.from_word" ng-options="word as word.word for word in words track by word.id">
+            <select class="form-control" id="field_from_word" name="from_word" ng-model="translation.fromWord" ng-options="word as word.word for word in words track by word.id">
                 <option value=""></option>
             </select>
         </div>
         <div class="form-group">
             <label for="field_to_word">To word</label>
-            <select class="form-control" id="field_to_word" name="to_word" ng-model="translation.to_word" ng-options="word as word.word for word in words track by word.id">
+            <select class="form-control" id="field_to_word" name="to_word" ng-model="translation.toWord" ng-options="word as word.word for word in words track by word.id">
                 <option value=""></option>
             </select>
         </div>

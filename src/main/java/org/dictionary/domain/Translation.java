@@ -34,13 +34,11 @@ public class Translation implements Serializable {
     @Column(name = "priority")
     private Integer priority;
 
-    // TODO rename field, getter and setter
     @ManyToOne
-    private Word from_word;
+    private Word fromWord;
 
-    // TODO rename field, getter and setter
     @ManyToOne
-    private Word to_word;
+    private Word toWord;
 
     public Long getId() {
         return id;
@@ -66,20 +64,20 @@ public class Translation implements Serializable {
         this.priority = priority;
     }
 
-    public Word getFrom_word() {
-        return from_word;
+    public Word getFromWord() {
+        return fromWord;
     }
 
-    public void setFrom_word(Word word) {
-        this.from_word = word;
+    public void setFromWord(Word word) {
+        this.fromWord = word;
     }
 
-    public Word getTo_word() {
-        return to_word;
+    public Word getToWord() {
+        return toWord;
     }
 
-    public void setTo_word(Word word) {
-        this.to_word = word;
+    public void setToWord(Word word) {
+        this.toWord = word;
     }
 
     @Override

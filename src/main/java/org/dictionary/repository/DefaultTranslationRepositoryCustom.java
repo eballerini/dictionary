@@ -24,7 +24,7 @@ public class DefaultTranslationRepositoryCustom implements TranslationRepository
     @SuppressWarnings("unchecked")
     public List<Translation> findTranslationsFromWord(Long wordId, Long toLanguageId) {
         Query q = em
-                .createQuery("from Translation t where t.from_word.id = :wordId and t.to_word.language.id = :toLanguageId");
+                .createQuery("from Translation t where t.fromWord.id = :wordId and t.toWord.language.id = :toLanguageId");
         q.setParameter("wordId", wordId);
         q.setParameter("toLanguageId", toLanguageId);
         return q.getResultList();
@@ -34,7 +34,7 @@ public class DefaultTranslationRepositoryCustom implements TranslationRepository
     @SuppressWarnings("unchecked")
     public List<Translation> findTranslationsToWord(Long wordId, Long toLanguageId) {
         Query q = em
-                .createQuery("from Translation t where t.to_word.id = :wordId and t.from_word.language.id = :toLanguageId");
+                .createQuery("from Translation t where t.toWord.id = :wordId and t.fromWord.language.id = :toLanguageId");
         q.setParameter("wordId", wordId);
         q.setParameter("toLanguageId", toLanguageId);
         return q.getResultList();
@@ -44,7 +44,7 @@ public class DefaultTranslationRepositoryCustom implements TranslationRepository
     @Override
     public Translation findTranslation(Long wordId1, Long wordId2) {
         // ideally we need 2 constraints to that (fromWord, toWord) is unique
-        Query q = em.createQuery("from Translation t where t.from_word.id = :wordId1 and t.to_word.id = :wordId2");
+        Query q = em.createQuery("from Translation t where t.fromWord.id = :wordId1 and t.toWord.id = :wordId2");
         q.setParameter("wordId1", wordId1);
         q.setParameter("wordId2", wordId2);
         List<Translation> t = q.getResultList();

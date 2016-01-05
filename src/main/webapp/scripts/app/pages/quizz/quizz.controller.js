@@ -4,6 +4,8 @@ angular.module('dictionaryApp')
     .controller('QuizzController', function ($scope, $state, $modal, Language, WordSearch, TranslationSearch) {
       
         $scope.languages = [];
+        $scope.numWordsSeen = 0;
+
         $scope.loadAll = function() {
             Language.query(function(result) {
                $scope.languages = result;
@@ -16,6 +18,7 @@ angular.module('dictionaryApp')
         $scope.submit = function() {
             $scope.translations = null;
             $scope.show = false;
+            $scope.numWordsSeen = $scope.numWordsSeen + 1;
 
             WordSearch.findRandom({languageId: $scope.from_language.id}, function(result) {
                 $scope.word = result;

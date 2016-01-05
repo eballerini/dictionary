@@ -16,18 +16,22 @@
 
                 </span>&nbsp;<span>
 
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary btn-xs">
                     <span>Go</span>
                 </button>
 
                 <span ng-if="translations">
-                    <a href="#" type="button" class="btn btn-primary" ng-click="showTranslations()" ng-if="!show">
+                    <a href="#" type="button" class="btn btn-primary btn-xs" ng-click="showTranslations()" ng-if="!show">
                         <span>Show translations</span>
                     </a>
-                    <a href="#" type="button" class="btn btn-primary" ng-click="hideTranslations()" ng-if="show">
+                    <a href="#" type="button" class="btn btn-primary btn-xs" ng-click="hideTranslations()" ng-if="show">
                         <span>Hide translations</span>
                     </a>
                 </span>
+
+                <div>
+                    Num of words this time: {{numWordsSeen}}
+                </div>
 
                 <div ng-if="loaded">
                     <span class="label label-default">{{word.word}}</span>

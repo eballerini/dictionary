@@ -3,6 +3,7 @@ package org.dictionary.api;
 public class FileImportReportAPI {
 
     private boolean success;
+    private String filename;
     private int numWordsCreated;
     private int numTranslationsCreated;
     private int numWordsNotCreated;
@@ -62,10 +63,19 @@ public class FileImportReportAPI {
         this.message = message;
     }
 
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ((filename == null) ? 0 : filename.hashCode());
         result = prime * result + ((message == null) ? 0 : message.hashCode());
         result = prime * result + numTranslationsCreated;
         result = prime * result + numTranslationsNotCreated;
@@ -84,6 +94,11 @@ public class FileImportReportAPI {
         if (getClass() != obj.getClass())
             return false;
         FileImportReportAPI other = (FileImportReportAPI) obj;
+        if (filename == null) {
+            if (other.filename != null)
+                return false;
+        } else if (!filename.equals(other.filename))
+            return false;
         if (message == null) {
             if (other.message != null)
                 return false;
@@ -104,9 +119,10 @@ public class FileImportReportAPI {
 
     @Override
     public String toString() {
-        return "FileImportReportAPI [success=" + success + ", numWordsCreated=" + numWordsCreated
-                + ", numTranslationsCreated=" + numTranslationsCreated + ", numWordsNotCreated=" + numWordsNotCreated
-                + ", numTranslationsNotCreated=" + numTranslationsNotCreated + ", message=" + message + "]";
+        return "FileImportReportAPI [success=" + success + ", filename=" + filename + ", numWordsCreated="
+                + numWordsCreated + ", numTranslationsCreated=" + numTranslationsCreated + ", numWordsNotCreated="
+                + numWordsNotCreated + ", numTranslationsNotCreated=" + numTranslationsNotCreated + ", message="
+                + message + "]";
     }
 
 

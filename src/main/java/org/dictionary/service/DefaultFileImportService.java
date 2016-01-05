@@ -7,18 +7,23 @@ import java.util.StringTokenizer;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.dictionary.api.FileImportReportAPI;
+import org.dictionary.domain.FileImport;
 import org.dictionary.domain.Language;
 import org.dictionary.domain.Translation;
 import org.dictionary.domain.Word;
+import org.dictionary.repository.FileRepository;
 import org.dictionary.repository.LanguageRepositoryCustom;
 import org.dictionary.repository.TranslationRepository;
 import org.dictionary.repository.TranslationRepositoryCustom;
 import org.dictionary.repository.WordRepository;
 import org.dictionary.repository.WordRepositoryCustom;
 import org.dictionary.service.util.FileImportActionType;
+import org.dictionary.translator.FileImportTranslator;
 import org.dictionary.util.FileImportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 @Named
 public class DefaultFileImportService implements FileImportService {
@@ -40,6 +45,12 @@ public class DefaultFileImportService implements FileImportService {
     @Inject
     private TranslationRepository translationRepository;
 
+    @Inject
+    private FileImportTranslator fileImportTranslator;
+
+    @Inject
+    private FileRepository fileRepository;
+
     public DefaultFileImportService() {
     }
 
@@ -47,6 +58,7 @@ public class DefaultFileImportService implements FileImportService {
     // TODO add flag to allow to override usage
 
     @Override
+    @Transactional(readOnly = false)
     public Map<FileImportActionType, Integer> importFile(String fileAsStr) {
         if (fileAsStr == null) {
             throw new IllegalArgumentException("file is null");
@@ -71,6 +83,13 @@ public class DefaultFileImportService implements FileImportService {
         // been imported
 
         return entityCreation;
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public void trackImport(FileImportReportAPI fileImportReportApi) {
+        FileImport fileImport = fileImportTranslator.fromAPI(fileImportReportApi);
+        fileRepository.save(fileImport);
     }
 
     private void processRow(String row, Language[] langs, Map<FileImportActionType, Integer> entityCreation) {

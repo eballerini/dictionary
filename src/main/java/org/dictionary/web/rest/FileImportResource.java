@@ -10,7 +10,6 @@ import org.dictionary.service.util.FileImportActionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,50 +30,51 @@ public class FileImportResource {
     public FileImportResource() {
     }
 
-    @RequestMapping(value = "/files",
+    @RequestMapping(value = "/files/import",
             method = RequestMethod.POST)
     @Timed
-    @Transactional(readOnly = false)
-    public ResponseEntity<FileImportReportAPI> importFile(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<FileImportReportAPI> importFile(@RequestParam("file") MultipartFile file,
+            @RequestParam("name") String name) {
+        // getting the name through file.getName() used to work but not anymore.
+        // Not sure what happened
         FileImportReportAPI report = new FileImportReportAPI(false);
         if (file == null) {
+            fileImportService.trackImport(report);
             throw new RuntimeException("cannot import a null file");
         }
-        String name = file.getName();
+        report.setFilename(name);
         log.debug("REST request to import file with name {}", name);
         String contentType = file.getContentType();
         // TODO would be better to use something like MediaType.PLAIN_TEXT_UTF_8
         if (!"text/plain".equals(contentType)) {
             log.error("Cannot upload file. Content type is {}", contentType);
             report.setMessage("only text files are allowed");
+            fileImportService.trackImport(report);
             return ResponseEntity.ok().body(report);
         }
             
-        if (!file.isEmpty()) {
-            try {
-                byte[] bytes = file.getBytes();
-                String fileAsStr = new String(bytes);
-                Map<FileImportActionType, Integer> entityCreation = fileImportService.importFile(fileAsStr);
-                Integer numWordsCreated = entityCreation.get(FileImportActionType.WORD_CREATION);
-                report.setNumWordsCreated(numWordsCreated);
-                Integer numWordsNotCreated = entityCreation.get(FileImportActionType.WORD_NO_CREATION);
-                report.setNumWordsNotCreated(numWordsNotCreated);
-                Integer numTranslationsCreated = entityCreation.get(FileImportActionType.TRANSLATION_CREATION);
-                report.setNumTranslationsCreated(numTranslationsCreated);
-                Integer numTranslationsNotCreated = entityCreation.get(FileImportActionType.TRANSLATION_NO_CREATION);
-                report.setNumTranslationsNotCreated(numTranslationsNotCreated);
-                report.setSuccess(true);
-                log.debug("You successfully uploaded {}", name);
-                log.debug("report: {}", report);
-            } catch (Exception e) {
-                log.error("You failed to upload " + name + " => ", e);
-                // ideally we'd set the report's message when the exception is
-                // of type FileImportException
-                throw new RuntimeException("file could not be uploaded", e);
-            }
-        } else {
-            report.setMessage("file is empty");
-            log.error("You failed to upload " + name + " because the file was empty.");
+        try {
+            byte[] bytes = file.getBytes();
+            String fileAsStr = new String(bytes);
+            Map<FileImportActionType, Integer> entityCreation = fileImportService.importFile(fileAsStr);
+            Integer numWordsCreated = entityCreation.get(FileImportActionType.WORD_CREATION);
+            report.setNumWordsCreated(numWordsCreated);
+            Integer numWordsNotCreated = entityCreation.get(FileImportActionType.WORD_NO_CREATION);
+            report.setNumWordsNotCreated(numWordsNotCreated);
+            Integer numTranslationsCreated = entityCreation.get(FileImportActionType.TRANSLATION_CREATION);
+            report.setNumTranslationsCreated(numTranslationsCreated);
+            Integer numTranslationsNotCreated = entityCreation.get(FileImportActionType.TRANSLATION_NO_CREATION);
+            report.setNumTranslationsNotCreated(numTranslationsNotCreated);
+            report.setSuccess(true);
+            log.debug("You successfully uploaded {}", name);
+            log.debug("report: {}", report);
+            fileImportService.trackImport(report);
+        } catch (Exception e) {
+            log.error("You failed to upload " + name + " => ", e);
+            // ideally we'd set the report's message when the exception is
+            // of type FileImportException
+            fileImportService.trackImport(report);
+            throw new RuntimeException("file could not be uploaded", e);
         }
 
         return ResponseEntity.ok().body(report);

@@ -22,8 +22,8 @@ angular.module('dictionaryApp')
         $scope.upload = function (file) {
             console.log('file name: ' + file.name);
             Upload.upload({
-                url: 'api/files',
-                fields: {'name': file.name}, // additional data to send. TODO remove
+                url: 'api/files/import',
+                fields: {'name': file.name}, // additional data to send.
                 file: file
             }).progress(function (evt) {
                 var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);

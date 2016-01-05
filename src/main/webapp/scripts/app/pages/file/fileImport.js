@@ -3,8 +3,8 @@
 angular.module('dictionaryApp')
     .config(function ($stateProvider) {
         $stateProvider
-            .state('file', {
-                url: '/file',
+            .state('fileImport', {
+                url: '/fileImport',
                 parent: 'entity',
                 data: {
                     authorities: ['ROLE_USER'],

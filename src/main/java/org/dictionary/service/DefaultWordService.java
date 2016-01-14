@@ -44,4 +44,13 @@ public class DefaultWordService implements WordService {
 
         return wordAPI;
     }
+
+    @Override
+    public long findMaxWordId() {
+        Long wordId = wordRepositoryCustom.findMaxWordId();
+        if (wordId == null) {
+            return 0L;
+        }
+        return wordId;
+    }
 }

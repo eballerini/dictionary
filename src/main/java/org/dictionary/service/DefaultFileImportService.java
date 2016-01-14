@@ -79,9 +79,6 @@ public class DefaultFileImportService implements FileImportService {
             processRow(row, langs, entityCreation);
         }
 
-        // TODO create a record in a new import table to keep track of what's
-        // been imported
-
         return entityCreation;
     }
 

@@ -30,9 +30,9 @@ public class DefaultWordRepositoryCustom implements WordRepositoryCustom {
     }
 
     @Override
-    public Word loadWord(long id, int offset) {
+    public Word loadWord(long languageId, int offset) {
         Query q = em.createQuery("from Word w where w.language.id = :languageId order by w.id");
-        q.setParameter("languageId", id);
+        q.setParameter("languageId", languageId);
         q.setMaxResults(1);
         q.setFirstResult(offset);
         Object o = q.getSingleResult();
@@ -53,6 +53,26 @@ public class DefaultWordRepositoryCustom implements WordRepositoryCustom {
             return null;
         }
         return (Word) o.get(0);
+    }
+
+    @SuppressWarnings("unchecked")
+    // TODO maybe change the return type to Iterable,....
+    @Override
+    public List<Word> load(long indexStart, int pageSize) {
+        Query q = em.createQuery("from Word w where w.word.id >= :wordId order by w.word.id");
+        q.setParameter("wordId", indexStart);
+        q.setMaxResults(pageSize);
+        return (List<Word>) q.getResultList();
+    }
+
+    @Override
+    public Long findMaxWordId() {
+        Query q = em.createQuery("select max(id) from Word");
+        Object o = q.getSingleResult();
+        if (o == null) {
+            return null;
+        }
+        return (Long) o;
     }
 
 }

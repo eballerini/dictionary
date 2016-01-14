@@ -6,4 +6,5 @@ public interface WordService {
 
     WordAPI findRandomWord(Long languageId);
 
+    long findMaxWordId();
 }

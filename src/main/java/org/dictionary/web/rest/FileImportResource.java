@@ -6,6 +6,8 @@ import javax.inject.Inject;
 
 import org.dictionary.api.FileImportReportAPI;
 import org.dictionary.service.FileImportService;
+import org.dictionary.service.WordSearchService;
+import org.dictionary.service.WordService;
 import org.dictionary.service.util.FileImportActionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +28,12 @@ public class FileImportResource {
     
     @Inject
     private FileImportService fileImportService;
+
+    @Inject
+    private WordService wordService;
+
+    @Inject
+    private WordSearchService wordSearchService;
 
     public FileImportResource() {
     }
@@ -56,6 +64,9 @@ public class FileImportResource {
         try {
             byte[] bytes = file.getBytes();
             String fileAsStr = new String(bytes);
+            // TODO get the latest inserted translation to get its id
+            long maxWordId = wordService.findMaxWordId();
+
             Map<FileImportActionType, Integer> entityCreation = fileImportService.importFile(fileAsStr);
             Integer numWordsCreated = entityCreation.get(FileImportActionType.WORD_CREATION);
             report.setNumWordsCreated(numWordsCreated);
@@ -68,13 +79,18 @@ public class FileImportResource {
             report.setSuccess(true);
             log.debug("You successfully uploaded {}", name);
             log.debug("report: {}", report);
-            fileImportService.trackImport(report);
+
+            // index words and translations
+            wordSearchService.indexWords(maxWordId + 1);
+
+            // TODO same with translations
         } catch (Exception e) {
             log.error("You failed to upload " + name + " => ", e);
             // ideally we'd set the report's message when the exception is
             // of type FileImportException
-            fileImportService.trackImport(report);
             throw new RuntimeException("file could not be uploaded", e);
+        } finally {
+            fileImportService.trackImport(report);
         }
 
         return ResponseEntity.ok().body(report);

@@ -55,4 +55,12 @@ angular.module('dictionaryApp')
             });
         }
 
+        $scope.switchLanguages = function() {
+            var tmp_language = $scope.from_language;
+            $scope.from_language = $scope.to_language;
+            $scope.to_language = tmp_language;
+            $scope.numWordsSeen = 0;
+            $scope.loaded = false;
+        }
+
     });

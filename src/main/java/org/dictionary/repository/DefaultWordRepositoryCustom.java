@@ -59,7 +59,7 @@ public class DefaultWordRepositoryCustom implements WordRepositoryCustom {
     // TODO maybe change the return type to Iterable,....
     @Override
     public List<Word> load(long indexStart, int pageSize) {
-        Query q = em.createQuery("from Word w where w.word.id >= :wordId order by w.word.id");
+        Query q = em.createQuery("from Word w where w.id >= :wordId order by w.id");
         q.setParameter("wordId", indexStart);
         q.setMaxResults(pageSize);
         return (List<Word>) q.getResultList();

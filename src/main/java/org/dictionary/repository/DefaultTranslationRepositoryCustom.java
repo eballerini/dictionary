@@ -53,4 +53,24 @@ public class DefaultTranslationRepositoryCustom implements TranslationRepository
         }
         return (Translation) t.get(0);
     }
+
+    @Override
+    public Long findMaxTranslationId() {
+        Query q = em.createQuery("select max(id) from Translation");
+        Object o = q.getSingleResult();
+        if (o == null) {
+            return null;
+        }
+        return (Long) o;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Translation> load(long indexStart, int pageSize) {
+        Query q = em
+                .createQuery("from Translation t where t.id >= :translationId order by t.id");
+        q.setParameter("translationId", indexStart);
+        q.setMaxResults(pageSize);
+        return (List<Translation>) q.getResultList();
+    }
 }

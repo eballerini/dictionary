@@ -49,7 +49,7 @@ public class DefaultWordService implements WordService {
     public long findMaxWordId() {
         Long wordId = wordRepositoryCustom.findMaxWordId();
         if (wordId == null) {
-            return 0L;
+            return -1L;
         }
         return wordId;
     }

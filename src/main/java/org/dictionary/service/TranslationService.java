@@ -8,4 +8,5 @@ public interface TranslationService {
 
     List<TranslationAPI> findTranslations(Long wordId, Long toLanguageId);
 
+    long findMaxTranslationId();
 }

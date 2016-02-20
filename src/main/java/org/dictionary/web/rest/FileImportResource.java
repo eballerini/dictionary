@@ -6,6 +6,8 @@ import javax.inject.Inject;
 
 import org.dictionary.api.FileImportReportAPI;
 import org.dictionary.service.FileImportService;
+import org.dictionary.service.TranslationSearchService;
+import org.dictionary.service.TranslationService;
 import org.dictionary.service.WordSearchService;
 import org.dictionary.service.WordService;
 import org.dictionary.service.util.FileImportActionType;
@@ -34,6 +36,12 @@ public class FileImportResource {
 
     @Inject
     private WordSearchService wordSearchService;
+
+    @Inject
+    private TranslationService translationService;
+
+    @Inject
+    private TranslationSearchService translationSearchService;
 
     public FileImportResource() {
     }
@@ -64,8 +72,8 @@ public class FileImportResource {
         try {
             byte[] bytes = file.getBytes();
             String fileAsStr = new String(bytes);
-            // TODO get the latest inserted translation to get its id
             long maxWordId = wordService.findMaxWordId();
+            long maxTranslationId = translationService.findMaxTranslationId();
 
             Map<FileImportActionType, Integer> entityCreation = fileImportService.importFile(fileAsStr);
             Integer numWordsCreated = entityCreation.get(FileImportActionType.WORD_CREATION);
@@ -82,8 +90,7 @@ public class FileImportResource {
 
             // index words and translations
             wordSearchService.indexWords(maxWordId + 1);
-
-            // TODO same with translations
+            translationSearchService.indexTranslations(maxTranslationId + 1);
         } catch (Exception e) {
             log.error("You failed to upload " + name + " => ", e);
             // ideally we'd set the report's message when the exception is

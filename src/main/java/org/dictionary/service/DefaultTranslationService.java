@@ -57,5 +57,13 @@ public class DefaultTranslationService implements TranslationService {
         return translationsAPI;
     }
 
+    @Override
+    public long findMaxTranslationId() {
+        Long translationId = translationRepositoryCustom.findMaxTranslationId();
+        if (translationId == null) {
+            return -1L;
+        }
+        return translationId;
+    }
 
 }

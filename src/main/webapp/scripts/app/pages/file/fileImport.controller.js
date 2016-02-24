@@ -11,7 +11,6 @@ angular.module('dictionaryApp')
         $scope.resetStatus();
 
         $scope.submit = function() {
-            console.log('importing');
             if ($scope.file) {
                 $scope.upload($scope.file);
             }
@@ -20,7 +19,6 @@ angular.module('dictionaryApp')
         }
         
         $scope.upload = function (file) {
-            console.log('file name: ' + file.name);
             Upload.upload({
                 url: 'api/files/import',
                 fields: {'name': file.name}, // additional data to send.
@@ -29,7 +27,6 @@ angular.module('dictionaryApp')
                 var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
                 console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
             }).success(function (data, status, headers, config) {
-                console.log('file ' + config.file.name + ' uploaded. Response: ' + data);
                 if (data.success) {
                     $scope.success = true;    
                     $scope.numWordsCreated = data.numWordsCreated;

@@ -97,7 +97,11 @@ public class FileImportResource {
             // of type FileImportException
             throw new RuntimeException("file could not be uploaded", e);
         } finally {
-            fileImportService.trackImport(report);
+            try {
+                fileImportService.trackImport(report);
+            } catch (Exception e) {
+                log.error("report could not be tracked: " + report, e);
+            }
         }
 
         return ResponseEntity.ok().body(report);

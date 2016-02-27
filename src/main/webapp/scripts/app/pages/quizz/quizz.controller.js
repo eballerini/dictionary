@@ -61,6 +61,8 @@ angular.module('dictionaryApp')
             $scope.to_language = tmp_language;
             $scope.numWordsSeen = 0;
             $scope.loaded = false;
+            $scope.show = false;
+            $scope.translations = null;
         }
 
     });

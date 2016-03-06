@@ -5,7 +5,7 @@ angular.module('dictionaryApp')
         $stateProvider
             .state('quizz', {
                 url: '/quizz',
-                parent: 'entity',
+                parent: 'site',
                 data: {
                     authorities: ['ROLE_USER'],
                     pageTitle: 'Quizz'

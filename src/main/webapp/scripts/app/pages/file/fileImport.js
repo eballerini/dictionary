@@ -5,7 +5,7 @@ angular.module('dictionaryApp')
         $stateProvider
             .state('fileImport', {
                 url: '/fileImport',
-                parent: 'entity',
+                parent: 'site',
                 data: {
                     authorities: ['ROLE_USER'],
                     pageTitle: 'File import'

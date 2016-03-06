@@ -35,7 +35,7 @@ spring:
             hibernate.cache.region.factory_class: org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
     data:
         elasticsearch:
-            cluster-name:
+            cluster-name: elasticsearch_emmanuel
             cluster-nodes: localhost:9300
     mail:
         host: localhost

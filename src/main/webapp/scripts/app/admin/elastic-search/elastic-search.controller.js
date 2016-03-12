@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('dictionaryApp')
-    .controller('ElasticSearchController', function ($scope, $state, $modal, $http) {
+    .controller('ElasticSearchController', function ($scope, $state, $http) {
       
         $scope.resetStatus = function() {
             $scope.success = false;
@@ -11,20 +11,15 @@ angular.module('dictionaryApp')
         $scope.resetStatus();
         
         $scope.submit = function() {
+        	$("#submit").addClass("disabled");
         	$http.post('api/indices/build')
-        	.success(function (data, status, headers, config) {
+        	.success(function (data, status) {
             	$scope.processed = true;    
-                if (data.success) {
+                if (data) {
                     $scope.success = true;    
-                } else {
-                    $scope.message = data.message;
                 }
-                
-            }).error(function (data, status, headers, config) {
+            }).error(function (data, status) {
                 $scope.processed = true;
             });
         };
-
-        
-
     });

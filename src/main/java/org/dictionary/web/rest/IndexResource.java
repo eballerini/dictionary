@@ -34,7 +34,6 @@ public class IndexResource {
         try {
             wordSearchService.indexWords(0);
             translationSearchService.indexTranslations(0);
-            // TODO file import + ??
         } catch (Exception e) {
             log.error("could not index all documents: ", e);
             return ResponseEntity.ok().body(Boolean.FALSE);

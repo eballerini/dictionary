@@ -1,9 +1,12 @@
 <div>
     <form name="importForm" role="form" ng-submit="submit()">
 	    Re-index your data in Elastic Search
-	    <button type="submit" class="btn btn-xs btn-primary">
+	    <button id="submit" type="submit" class="btn btn-xs btn-primary">
 	        <span>Re-index</span>
 	    </button>
-        <div ng-if="success" class="alert alert-success">Re-indexing successful</div>
+        <div ng-if="processed">
+            <div ng-if="success" class="alert alert-success">Re-indexing successful</div>
+            <div ng-if="!success" class="alert alert-danger">Re-indexing failed</div>
+        </div>
     </form>
 </div>

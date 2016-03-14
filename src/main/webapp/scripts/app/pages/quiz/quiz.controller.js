@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('dictionaryApp')
-    .controller('QuizzController', function ($scope, $state, $modal, Language, WordSearch, TranslationSearch) {
+    .controller('QuizController', function ($scope, $state, $modal, Language, WordSearch, TranslationSearch) {
       
         $scope.languages = [];
         $scope.numWordsSeen = 0;

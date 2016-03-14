@@ -3,17 +3,17 @@
 angular.module('dictionaryApp')
     .config(function ($stateProvider) {
         $stateProvider
-            .state('quizz', {
-                url: '/quizz',
+            .state('quiz', {
+                url: '/quiz',
                 parent: 'site',
                 data: {
                     authorities: ['ROLE_USER'],
-                    pageTitle: 'Quizz'
+                    pageTitle: 'Quiz'
                 },
                 views: {
                     'content@': {
-                        templateUrl: 'scripts/app/pages/quizz/quizz.html',
-                        controller: 'QuizzController'
+                        templateUrl: 'scripts/app/pages/quiz/quiz.html',
+                        controller: 'QuizController'
                     }
                 },
                 resolve: {

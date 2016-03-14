@@ -150,6 +150,7 @@ public class WordResource {
     }
     
     // TODO add doc
+    // TODO check if ES offers this out-of-the-box
     @RequestMapping(value = "/_search/words/random/{languageId}", 
             method = RequestMethod.GET, 
             produces = MediaType.APPLICATION_JSON_VALUE)

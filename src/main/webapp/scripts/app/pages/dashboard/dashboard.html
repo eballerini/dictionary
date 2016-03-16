@@ -13,9 +13,9 @@
             </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="language in languages track by language.id">
-                    <td>{{language.language}}</td>
-                    <td>TODO</td>
+                <tr ng-repeat="stat in dashboard.stats | orderBy:'language.name':'reverse' track by stat.language.id ">
+                    <td>{{stat.language.language}}</td>
+                    <td>{{stat.numWords}}</td>
                     <td>TODO</td>
                 </tr>
             </tbody>

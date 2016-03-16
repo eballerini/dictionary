@@ -1,15 +1,16 @@
 'use strict';
 
 angular.module('dictionaryApp')
-    .controller('DashboardController', function ($scope, $state, Language, WordSearch, TranslationSearch) {
+    .controller('DashboardController', function ($scope, $state, Dashboard) {
       
-        $scope.languages = [];
+        $scope.dashboard = null;
 
-        $scope.loadAll = function() {
-            Language.query(function(result) {
-               $scope.languages = result;
+        $scope.load = function() {
+        	Dashboard.query(function(result) {
+               $scope.dashboard = result;
             });
         };
-        $scope.loadAll();
+        
+        $scope.load();
 
     });

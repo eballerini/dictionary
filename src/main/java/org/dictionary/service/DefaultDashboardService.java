@@ -47,17 +47,20 @@ public class DefaultDashboardService implements DashboardService {
         log.debug("there are {} languages", allLanguages.size());
 
         DashboardAPI dashboard = new DashboardAPI();
-        List<StatAPI> stats = new ArrayList<StatAPI>();
+        List<StatAPI> stats = getStats(allLanguages);
+        dashboard.setStats(stats);
 
+        return dashboard;
+    }
+
+    private List<StatAPI> getStats(List<Language> allLanguages) {
+        List<StatAPI> stats = new ArrayList<StatAPI>();
         for (Language language: allLanguages) {
             LanguageAPI languageAPI = languageTranslator.toAPI(language);
             StatAPI stat = statTranslator.toAPI(languageAPI, countWords(languageAPI.getId()));
             stats.add(stat);
         }
-
-        dashboard.setStats(stats);
-
-        return dashboard;
+        return stats;
     }
 
     private long countWords(long languageId) {

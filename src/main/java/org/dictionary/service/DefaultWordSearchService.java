@@ -36,6 +36,7 @@ public class DefaultWordSearchService implements WordSearchService {
             List<Word> words = wordRepositoryCustom.load(id, DictionaryConstants.PAGE_SIZE);
             numResults = words.size();
             if (!words.isEmpty()) {
+                // TODO check whether I should use index or save
                 words.stream().forEach(w -> wordSearchRepository.index(w));
                 id = words.get(numResults - 1).getId() + 1;
                 log.debug("indexed {} words", numResults);

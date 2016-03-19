@@ -3,7 +3,7 @@ package org.dictionary.api;
 public class StatAPI {
 
     private LanguageAPI language;
-    private long numWords;
+    private int numWords;
 
     public StatAPI() {
         super();
@@ -17,11 +17,11 @@ public class StatAPI {
         this.language = language;
     }
 
-    public long getNumWords() {
+    public int getNumWords() {
         return numWords;
     }
 
-    public void setNumWords(long numWords) {
+    public void setNumWords(int numWords) {
         this.numWords = numWords;
     }
 
@@ -30,7 +30,7 @@ public class StatAPI {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((language == null) ? 0 : language.hashCode());
-        result = prime * result + (int) (numWords ^ (numWords >>> 32));
+        result = prime * result + numWords;
         return result;
     }
 

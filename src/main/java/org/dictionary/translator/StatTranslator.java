@@ -8,7 +8,7 @@ import org.dictionary.api.StatAPI;
 @Named
 public class StatTranslator {
 
-    public StatAPI toAPI(LanguageAPI language, long numWords) {
+    public StatAPI toAPI(LanguageAPI language, int numWords) {
         StatAPI stat = new StatAPI();
         stat.setLanguage(language);
         stat.setNumWords(numWords);

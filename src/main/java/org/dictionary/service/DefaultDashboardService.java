@@ -11,6 +11,7 @@ import org.dictionary.api.LanguageAPI;
 import org.dictionary.api.StatAPI;
 import org.dictionary.domain.Language;
 import org.dictionary.repository.LanguageRepository;
+import org.dictionary.repository.search.TranslationSearchRepository;
 import org.dictionary.repository.search.WordSearchRepository;
 import org.dictionary.translator.LanguageTranslator;
 import org.dictionary.translator.StatTranslator;
@@ -24,6 +25,9 @@ public class DefaultDashboardService implements DashboardService {
 
     @Inject
     private WordSearchRepository wordSearchRepository;
+
+    @Inject
+    private TranslationSearchRepository translationSearchRepository;
 
     @Inject
     private LanguageRepository languageRepository;
@@ -53,7 +57,8 @@ public class DefaultDashboardService implements DashboardService {
         List<StatAPI> stats = new ArrayList<StatAPI>();
         for (Language language: allLanguages) {
             LanguageAPI languageAPI = languageTranslator.toAPI(language);
-            StatAPI stat = statTranslator.toAPI(languageAPI, countWords(languageAPI.getId()));
+            StatAPI stat = statTranslator.toAPI(languageAPI, countWords(languageAPI.getId()),
+                    countTranslations(languageAPI.getId()));
             stats.add(stat);
         }
         return stats;
@@ -63,5 +68,13 @@ public class DefaultDashboardService implements DashboardService {
         int numWordsForLanguage = wordSearchRepository.countByLanguageId(languageId);
         log.debug("num of words for language with id {}: {}", languageId, numWordsForLanguage);
         return numWordsForLanguage;
+    }
+
+    private int countTranslations(long languageId) {
+        int numTranslationsFromWordForLanguage = translationSearchRepository.countByFromWordLanguageId(languageId);
+        int numTranslationsToWordForLanguage = translationSearchRepository.countByToWordLanguageId(languageId);
+        int numTranslationsForLanguage = numTranslationsFromWordForLanguage + numTranslationsToWordForLanguage;
+        log.debug("num of translation for language with id {}: {}", languageId, numTranslationsForLanguage);
+        return numTranslationsForLanguage;
     }
 }

@@ -4,6 +4,7 @@ public class StatAPI {
 
     private LanguageAPI language;
     private int numWords;
+    private int numTranslations;
 
     public StatAPI() {
         super();
@@ -25,11 +26,20 @@ public class StatAPI {
         this.numWords = numWords;
     }
 
+    public int getNumTranslations() {
+        return numTranslations;
+    }
+
+    public void setNumTranslations(int numTranslations) {
+        this.numTranslations = numTranslations;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((language == null) ? 0 : language.hashCode());
+        result = prime * result + numTranslations;
         result = prime * result + numWords;
         return result;
     }
@@ -48,6 +58,8 @@ public class StatAPI {
                 return false;
         } else if (!language.equals(other.language))
             return false;
+        if (numTranslations != other.numTranslations)
+            return false;
         if (numWords != other.numWords)
             return false;
         return true;
@@ -55,7 +67,8 @@ public class StatAPI {
 
     @Override
     public String toString() {
-        return "StatAPI [language=" + language + ", numWords=" + numWords + "]";
+        return "StatAPI [language=" + language + ", numWords=" + numWords + ", numTranslations=" + numTranslations
+                + "]";
     }
 
 }

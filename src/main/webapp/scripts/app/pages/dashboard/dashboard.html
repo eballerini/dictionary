@@ -16,7 +16,7 @@
                 <tr ng-repeat="stat in dashboard.stats | orderBy:'language.language' track by stat.language.id ">
                     <td>{{stat.language.language}}</td>
                     <td>{{stat.numWords}}</td>
-                    <td>TODO</td>
+                    <td>{{stat.numTranslations}}</td>
                 </tr>
             </tbody>
         </table>

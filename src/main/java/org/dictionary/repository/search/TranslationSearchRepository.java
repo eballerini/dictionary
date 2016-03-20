@@ -7,4 +7,8 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
  * Spring Data ElasticSearch repository for the Translation entity.
  */
 public interface TranslationSearchRepository extends ElasticsearchRepository<Translation, Long> {
+
+    int countByFromWordLanguageId(long languageId);
+
+    int countByToWordLanguageId(long languageId);
 }

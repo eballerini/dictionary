@@ -46,6 +46,7 @@ public class FileImportResource {
     public FileImportResource() {
     }
 
+    // TODO method too long - refactor
     @RequestMapping(value = "/files/import",
             method = RequestMethod.POST)
     @Timed

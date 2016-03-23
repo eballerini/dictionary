@@ -18,24 +18,14 @@
     -->
     <changeSet id="20160321230000" author="jhipster">
         <createTable tableName="word_tag">
-            <column name="id" type="bigint" autoIncrement="${autoIncrement}">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
             <column name="word_id" type="bigint"/>
             <column name="tag_id" type="bigint"/>
         </createTable>
         
-        <addForeignKeyConstraint baseColumnNames="word_id"
-                                 baseTableName="word_tag"
-                                 constraintName="fk_word_tag_word_id"
-                                 referencedColumnNames="id"
-                                 referencedTableName="word"/>
-                                 
-        <addForeignKeyConstraint baseColumnNames="tag_id"
-                                 baseTableName="word_tag"
-                                 constraintName="fk_word_tag_tag_id"
-                                 referencedColumnNames="id"
-                                 referencedTableName="tag"/>
+        <addPrimaryKey columnNames="word_id, tag_id"
+                       tableName="word_tag"
+                       constraintName="pk_word_tag"/>
+        
         
     </changeSet>
 </databaseChangeLog>

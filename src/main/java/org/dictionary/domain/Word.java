@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -20,6 +19,8 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.springframework.data.elasticsearch.annotations.Document;
 
 /**
@@ -46,11 +47,12 @@ public class Word implements Serializable {
     @ManyToOne
     private Language language;
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "WORD_TAG", joinColumns = {
 			@JoinColumn(name = "WORD_ID", nullable = false, updatable = false) }, 
 			inverseJoinColumns = { @JoinColumn(name = "TAG_ID", 
 					nullable = false, updatable = false) })
+	@Cascade({ CascadeType.SAVE_UPDATE })
 	private Set<Tag> tags = new HashSet<Tag>(0);
 
     public Long getId() {

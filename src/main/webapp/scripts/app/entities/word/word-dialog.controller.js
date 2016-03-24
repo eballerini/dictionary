@@ -1,14 +1,23 @@
 'use strict';
 
 angular.module('dictionaryApp').controller('WordDialogController',
-    ['$scope', '$stateParams', '$modalInstance', 'entity', 'Word', 'Language',
-        function($scope, $stateParams, $modalInstance, entity, Word, Language) {
+    ['$scope', '$stateParams', '$modalInstance', 'entity', 'Word', 'Language', 'Tag',
+        function($scope, $stateParams, $modalInstance, entity, Word, Language, Tag) {
 
         $scope.word = entity;
         $scope.languages = Language.query();
+        $scope.tags = [];
+        loadAllTags();
+
         $scope.load = function(id) {
             Word.get({id : id}, function(result) {
                 $scope.word = result;
+            });
+        };
+
+        function loadAllTags() {
+            Tag.query({}, function(result, headers) {
+                $scope.tags = result;
             });
         };
 

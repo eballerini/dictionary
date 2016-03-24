@@ -25,6 +25,18 @@
         <addPrimaryKey columnNames="word_id, tag_id"
                        tableName="word_tag"
                        constraintName="pk_word_tag"/>
+                       
+        <addForeignKeyConstraint baseColumnNames="word_id"
+                                 baseTableName="word_tag"
+                                 constraintName="fk_word_tag_word_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="word"/>
+                                 
+        <addForeignKeyConstraint baseColumnNames="tag_id"
+                                 baseTableName="word_tag"
+                                 constraintName="fk_word_tag_tag_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="tag"/>
         
         
     </changeSet>

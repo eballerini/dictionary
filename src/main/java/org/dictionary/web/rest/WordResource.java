@@ -19,6 +19,7 @@ import org.dictionary.repository.search.WordSearchRepository;
 import org.dictionary.service.WordService;
 import org.dictionary.web.rest.util.HeaderUtil;
 import org.dictionary.web.rest.util.PaginationUtil;
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -27,6 +28,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -112,9 +114,15 @@ public class WordResource {
         method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
+	@Transactional(readOnly = true)
     public ResponseEntity<Word> getWord(@PathVariable Long id) {
         log.debug("REST request to get Word : {}", id);
-        return Optional.ofNullable(wordRepository.findOne(id))
+		// TODO move this to a service
+		Optional<Word> optionalWord = Optional.ofNullable(wordRepository.findOne(id));
+		if (optionalWord.isPresent()) {
+			Hibernate.initialize(optionalWord.get().getTags());
+		}
+		return optionalWord
             .map(word -> new ResponseEntity<>(
                 word,
                 HttpStatus.OK))

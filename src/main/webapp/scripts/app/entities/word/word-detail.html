@@ -34,6 +34,16 @@
                     <a class="form-control-static" ui-sref="language.detail({id:word.language.id})">{{word.language.language}}</a>
                 </td>
             </tr>
+            <tr>
+                <td>
+                    <span>tags</span>
+                </td>
+                <td>
+                    <div ng-repeat="tag in word.tags | orderBy:'name' track by tag.id">
+                        {{tag.name}}
+                    </div>
+                </td>
+            </tr>
             </tbody>
         </table>
     </div>

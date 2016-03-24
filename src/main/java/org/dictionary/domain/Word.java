@@ -1,13 +1,19 @@
 package org.dictionary.domain;
 
 import java.io.Serializable;
-import java.util.Objects;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -39,6 +45,13 @@ public class Word implements Serializable {
     @NotNull
     @ManyToOne
     private Language language;
+
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinTable(name = "WORD_TAG", joinColumns = {
+			@JoinColumn(name = "WORD_ID", nullable = false, updatable = false) }, 
+			inverseJoinColumns = { @JoinColumn(name = "TAG_ID", 
+					nullable = false, updatable = false) })
+	private Set<Tag> tags = new HashSet<Tag>(0);
 
     public Long getId() {
         return id;
@@ -72,33 +85,71 @@ public class Word implements Serializable {
         this.language = language;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
 
-        Word word = (Word) o;
+	public Set<Tag> getTags() {
+		return tags;
+	}
 
-        if ( ! Objects.equals(id, word.id)) return false;
+	public void setTags(Set<Tag> tags) {
+		this.tags = tags;
+	}
 
-        return true;
-    }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((language == null) ? 0 : language.hashCode());
+		result = prime * result + ((original_word == null) ? 0 : original_word.hashCode());
+		result = prime * result + ((tags == null) ? 0 : tags.hashCode());
+		result = prime * result + ((word == null) ? 0 : word.hashCode());
+		return result;
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Word other = (Word) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		}
+		else if (!id.equals(other.id))
+			return false;
+		if (language == null) {
+			if (other.language != null)
+				return false;
+		}
+		else if (!language.equals(other.language))
+			return false;
+		if (original_word == null) {
+			if (other.original_word != null)
+				return false;
+		}
+		else if (!original_word.equals(other.original_word))
+			return false;
+		if (tags == null) {
+			if (other.tags != null)
+				return false;
+		}
+		else if (!tags.equals(other.tags))
+			return false;
+		if (word == null) {
+			if (other.word != null)
+				return false;
+		}
+		else if (!word.equals(other.word))
+			return false;
+		return true;
+	}
 
-    @Override
-    public String toString() {
-        return "Word{" +
-            "id=" + id +
-            ", word='" + word + "'" +
-            ", original_word='" + original_word + "'" +
-            '}';
-    }
+	@Override
+	public String toString() {
+		return "Word [id=" + id + ", word=" + word + ", original_word=" + original_word + ", language=" + language + "]";
+	}
 }

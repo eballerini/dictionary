@@ -19,9 +19,8 @@ public class FileImportTranslator {
         fileImport.setName(api.getFilename());
         if (api.isSuccess()) {
             fileImport.setStatus("success");
-            fileImport.setComments("num words created: " + api.getNumWordsCreated() + ", num existing words: "
-                    + api.getNumWordsNotCreated() + ", num translations created: " + api.getNumTranslationsCreated()
-                    + ", num existing translations: " + api.getNumTranslationsNotCreated());
+			fileImport.setComments("num words created: " + api.getNumWordsCreated()
+            + ", num translations created: " + api.getNumTranslationsCreated());
         } else {
             fileImport.setStatus("failure");
         }

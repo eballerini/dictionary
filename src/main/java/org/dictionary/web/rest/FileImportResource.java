@@ -25,9 +25,9 @@ import com.codahale.metrics.annotation.Timed;
 @RestController
 @RequestMapping("/api")
 public class FileImportResource {
-    
+
     private final Logger log = LoggerFactory.getLogger(FileImportResource.class);
-    
+
     @Inject
     private FileImportService fileImportService;
 
@@ -46,66 +46,75 @@ public class FileImportResource {
     public FileImportResource() {
     }
 
-    // TODO method too long - refactor
-    @RequestMapping(value = "/files/import",
-            method = RequestMethod.POST)
+    @RequestMapping(value = "/files/import", method = RequestMethod.POST)
     @Timed
     public ResponseEntity<FileImportReportAPI> importFile(@RequestParam("file") MultipartFile file,
             @RequestParam("name") String name) {
         // getting the name through file.getName() used to work but not anymore.
         // Not sure what happened
         FileImportReportAPI report = new FileImportReportAPI(false);
-        if (file == null) {
-            fileImportService.trackImport(report);
-            throw new RuntimeException("cannot import a null file");
-        }
         report.setFilename(name);
         log.debug("REST request to import file with name {}", name);
-        String contentType = file.getContentType();
-        // TODO would be better to use something like MediaType.PLAIN_TEXT_UTF_8
-        if (!"text/plain".equals(contentType)) {
-            log.error("Cannot upload file. Content type is {}", contentType);
-            report.setMessage("only text files are allowed");
-            fileImportService.trackImport(report);
-            return ResponseEntity.ok().body(report);
-        }
-            
+
         try {
-            byte[] bytes = file.getBytes();
-            String fileAsStr = new String(bytes);
-            long maxWordId = wordService.findMaxWordId();
-            long maxTranslationId = translationService.findMaxTranslationId();
+            checkContentType(file.getContentType());
+            String fileAsStr = new String(file.getBytes());
 
             Map<FileImportActionType, Integer> entityCreation = fileImportService.importFile(fileAsStr);
-            Integer numWordsCreated = entityCreation.get(FileImportActionType.WORD_CREATION);
-            report.setNumWordsCreated(numWordsCreated);
-            Integer numWordsNotCreated = entityCreation.get(FileImportActionType.WORD_NO_CREATION);
-            report.setNumWordsNotCreated(numWordsNotCreated);
-            Integer numTranslationsCreated = entityCreation.get(FileImportActionType.TRANSLATION_CREATION);
-            report.setNumTranslationsCreated(numTranslationsCreated);
-            Integer numTranslationsNotCreated = entityCreation.get(FileImportActionType.TRANSLATION_NO_CREATION);
-            report.setNumTranslationsNotCreated(numTranslationsNotCreated);
-            report.setSuccess(true);
-            log.debug("You successfully uploaded {}", name);
-            log.debug("report: {}", report);
+            updateReport(name, report, entityCreation);
 
-            // index words and translations
-            wordSearchService.indexWords(maxWordId + 1);
-            translationSearchService.indexTranslations(maxTranslationId + 1);
+            indexWordsAndTranslations();
         } catch (Exception e) {
             log.error("You failed to upload " + name + " => ", e);
             // ideally we'd set the report's message when the exception is
             // of type FileImportException
             throw new RuntimeException("file could not be uploaded", e);
         } finally {
-            try {
-                fileImportService.trackImport(report);
-            } catch (Exception e) {
-                log.error("report could not be tracked: " + report, e);
-            }
+            trackImport(report);
         }
 
         return ResponseEntity.ok().body(report);
     }
 
+    private void checkContentType(String contentType) {
+        // TODO would be better to use something like MediaType.PLAIN_TEXT_UTF_8
+        if (!"text/plain".equals(contentType)) {
+            log.error("Cannot upload file. Content type is {}", contentType);
+            throw new IllegalArgumentException("only text files are allowed");
+        }
+    }
+
+    private void updateReport(String fileName, FileImportReportAPI report,
+            Map<FileImportActionType, Integer> entityCreation) {
+        Integer numWordsCreated = entityCreation.get(FileImportActionType.WORD_CREATION);
+        report.setNumWordsCreated(numWordsCreated);
+        Integer numTranslationsCreated = entityCreation.get(FileImportActionType.TRANSLATION_CREATION);
+        report.setNumTranslationsCreated(numTranslationsCreated);
+        report.setSuccess(true);
+        log.debug("You successfully uploaded {}", fileName);
+        log.debug("report: {}", report);
+    }
+
+    private void indexWordsAndTranslations() {
+        indexWords();
+        indexTranslations();
+    }
+
+    private void indexTranslations() {
+        long maxTranslationId = translationService.findMaxTranslationId();
+        translationSearchService.indexTranslations(maxTranslationId + 1);
+    }
+
+    private void indexWords() {
+        long maxWordId = wordService.findMaxWordId();
+        wordSearchService.indexWords(maxWordId + 1);
+    }
+
+    private void trackImport(FileImportReportAPI report) {
+        try {
+            fileImportService.trackImport(report);
+        } catch (Exception e) {
+            log.error("report could not be tracked: " + report, e);
+        }
+    }
 }

@@ -31,8 +31,6 @@ angular.module('dictionaryApp')
                     $scope.success = true;    
                     $scope.numWordsCreated = data.numWordsCreated;
                     $scope.numTranslationsCreated = data.numTranslationsCreated;
-                    $scope.numWordsNotCreated = data.numWordsNotCreated;
-                    $scope.numTranslationsNotCreated = data.numTranslationsNotCreated;
                 } else {
                     $scope.failure = true;    
                     $scope.message = data.message;

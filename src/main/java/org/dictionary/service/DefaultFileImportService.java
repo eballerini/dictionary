@@ -89,6 +89,7 @@ public class DefaultFileImportService implements FileImportService {
         fileRepository.save(fileImport);
     }
 
+	// TODO too long - refactor
     private void processRow(String row, Language[] langs, Map<FileImportActionType, Integer> entityCreation) {
         StringTokenizer sk = new StringTokenizer(row, ",");
         String inputWord1 = sk.nextToken().trim();
@@ -120,14 +121,12 @@ public class DefaultFileImportService implements FileImportService {
             log.debug("translation between word {} and {} doesn't exist yet. Creating it", word1, word2);
             translationRepository.save(t);
             increaseCount(FileImportActionType.TRANSLATION_CREATION, entityCreation);
-        } else {
-            log.debug("translation between word {} and {} already exists");
-            increaseCount(FileImportActionType.TRANSLATION_NO_CREATION, entityCreation);
         }
 
         // TODO update if flag is set
     }
 
+	// TODO too long - refactor
     private Word loadOrCreateWord(String wordAsStr, Language language, Map<FileImportActionType, Integer> entityCreation) {
         Word word = wordRepositoryCustom.loadWord(wordAsStr, language.getId());
         if (word == null) {
@@ -137,13 +136,11 @@ public class DefaultFileImportService implements FileImportService {
             word.setLanguage(language);
             wordRepository.save(word);
             increaseCount(FileImportActionType.WORD_CREATION, entityCreation);
-        } else {
-            log.debug("word {} already exists", wordAsStr);
-            increaseCount(FileImportActionType.WORD_NO_CREATION, entityCreation);
         }
         return word;
     }
 
+	// TODO too long - refactor
     private Language[] processHeader(String header) {
         log.debug("header: {}", header);
         StringTokenizer headerTk = new StringTokenizer(header, ",");

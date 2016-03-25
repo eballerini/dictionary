@@ -59,11 +59,14 @@ public class FileImportResource {
         try {
             checkContentType(file.getContentType());
             String fileAsStr = new String(file.getBytes());
+            
+            long maxWordId = wordService.findMaxWordId();
+            long maxTranslationId = translationService.findMaxTranslationId();
 
             Map<FileImportActionType, Integer> entityCreation = fileImportService.importFile(fileAsStr);
             updateReport(name, report, entityCreation);
 
-            indexWordsAndTranslations();
+            indexWordsAndTranslations(maxWordId, maxTranslationId);
         } catch (Exception e) {
             log.error("You failed to upload " + name + " => ", e);
             // ideally we'd set the report's message when the exception is
@@ -95,19 +98,9 @@ public class FileImportResource {
         log.debug("report: {}", report);
     }
 
-    private void indexWordsAndTranslations() {
-        indexWords();
-        indexTranslations();
-    }
-
-    private void indexTranslations() {
-        long maxTranslationId = translationService.findMaxTranslationId();
-        translationSearchService.indexTranslations(maxTranslationId + 1);
-    }
-
-    private void indexWords() {
-        long maxWordId = wordService.findMaxWordId();
+    private void indexWordsAndTranslations(long maxWordId, long maxTranslationId) {
         wordSearchService.indexWords(maxWordId + 1);
+        translationSearchService.indexTranslations(maxTranslationId + 1);
     }
 
     private void trackImport(FileImportReportAPI report) {

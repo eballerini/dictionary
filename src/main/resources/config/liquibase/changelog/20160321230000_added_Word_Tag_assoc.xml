@@ -18,8 +18,12 @@
     -->
     <changeSet id="20160321230000" author="jhipster">
         <createTable tableName="word_tag">
-            <column name="word_id" type="bigint"/>
-            <column name="tag_id" type="bigint"/>
+            <column name="word_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+            <column name="tag_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
         </createTable>
         
         <addPrimaryKey columnNames="word_id, tag_id"

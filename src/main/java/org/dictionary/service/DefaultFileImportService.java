@@ -7,6 +7,7 @@ import java.util.StringTokenizer;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang.StringUtils;
 import org.dictionary.api.FileImportReportAPI;
 import org.dictionary.domain.FileImport;
 import org.dictionary.domain.Language;
@@ -57,10 +58,24 @@ public class DefaultFileImportService implements FileImportService {
     // TODO add DB constraint to make language (string) unique
     // TODO add flag to allow to override usage
 
+    public DefaultFileImportService(LanguageRepositoryCustom languageRepositoryCustom,
+            WordRepositoryCustom wordRepositoryCustom, WordRepository wordRepository,
+            TranslationRepositoryCustom translationRepositoryCustom, TranslationRepository translationRepository,
+            FileImportTranslator fileImportTranslator, FileRepository fileRepository) {
+        super();
+        this.languageRepositoryCustom = languageRepositoryCustom;
+        this.wordRepositoryCustom = wordRepositoryCustom;
+        this.wordRepository = wordRepository;
+        this.translationRepositoryCustom = translationRepositoryCustom;
+        this.translationRepository = translationRepository;
+        this.fileImportTranslator = fileImportTranslator;
+        this.fileRepository = fileRepository;
+    }
+
     @Override
     @Transactional(readOnly = false)
     public Map<FileImportActionType, Integer> importFile(String fileAsStr) {
-        if (fileAsStr == null) {
+        if (StringUtils.isEmpty(fileAsStr)) {
             throw new IllegalArgumentException("file is null");
         }
         StringTokenizer rowTokenizer = new StringTokenizer(fileAsStr, "\n");

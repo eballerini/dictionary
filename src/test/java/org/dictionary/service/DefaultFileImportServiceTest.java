@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import org.dictionary.domain.Language;
 import org.dictionary.domain.Translation;
@@ -105,12 +106,19 @@ public class DefaultFileImportServiceTest {
     }
 
     @Test
+    public void testImportFileCreateNothingNoWords() {
+        Map<FileImportActionType, Integer> actionTypes = service.importFile("english, cantonese, usage");
+        int expectedWordsCreated = 0;
+        int expectedTranslationsCreated = 0;
+        checkResult(actionTypes, expectedWordsCreated, expectedTranslationsCreated);
+    }
+
+    @Test
     public void testImportFileCreate4Words2Translations() {
         Map<FileImportActionType, Integer> actionTypes = 
                 service.importFile("english, cantonese, usage"
                 + "\ngood, hou2, hou2 hou2"
                 + "\ncold, dung1");
-        Assert.assertNotNull(actionTypes);
         int expectedWordsCreated = 4;
         int expectedTranslationsCreated = 2;
         checkResult(actionTypes, expectedWordsCreated, expectedTranslationsCreated);
@@ -122,7 +130,6 @@ public class DefaultFileImportServiceTest {
                 service.importFile("english, cantonese, usage"
                 + "\nperson, yan4"
                 + "\nFrance, faat3 gwok3");
-        Assert.assertNotNull(actionTypes);
         int expectedWordsCreated = 2;
         int expectedTranslationsCreated = 2;
         checkResult(actionTypes, expectedWordsCreated, expectedTranslationsCreated);
@@ -134,7 +141,6 @@ public class DefaultFileImportServiceTest {
         Map<FileImportActionType, Integer> actionTypes = 
                 service.importFile("english, cantonese, usage"
                 + "\nFrance, yan4, not real");
-        Assert.assertNotNull(actionTypes);
         int expectedWordsCreated = 0;
         int expectedTranslationsCreated = 1;
         checkResult(actionTypes, expectedWordsCreated, expectedTranslationsCreated);
@@ -145,28 +151,22 @@ public class DefaultFileImportServiceTest {
         Map<FileImportActionType, Integer> actionTypes = 
                 service.importFile("english, cantonese, usage"
                 + "\none, yat1");
-        Assert.assertNotNull(actionTypes);
         int expectedWordsCreated = 0;
         int expectedTranslationsCreated = 0;
         checkResult(actionTypes, expectedWordsCreated, expectedTranslationsCreated);
     }
     
-    // TODO fix the code
-    // @Test
+    @Test(expected = NoSuchElementException.class)
     public void testImportFileCreateNothingBadRow() {
-        Map<FileImportActionType, Integer> actionTypes = 
-                service.importFile("english, cantonese, usage"
-                        + "\ngood, hou2, hou2 hou2"
-                        + "\nBAD ROW"
-                        + "\ncold, dung1");
-        Assert.assertNotNull(actionTypes);
-        int expectedWordsCreated = 0;
-        int expectedTranslationsCreated = 0;
-        checkResult(actionTypes, expectedWordsCreated, expectedTranslationsCreated);
+        service.importFile("english, cantonese, usage" 
+                + "\ngood, hou2, hou2 hou2" 
+                + "\nBAD ROW" 
+                + "\ncold, dung1");
     }
 
     private void checkResult(Map<FileImportActionType, Integer> actionTypes, int expectedWordsCreated,
             int expectedTranslationsCreated) {
+        Assert.assertNotNull(actionTypes);
         Assert.assertEquals(2, actionTypes.keySet().size());
         Assert.assertEquals(expectedWordsCreated, actionTypes.get(FileImportActionType.WORD_CREATION).intValue());
         Assert.assertEquals(expectedTranslationsCreated, actionTypes.get(FileImportActionType.TRANSLATION_CREATION)

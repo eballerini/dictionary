@@ -81,10 +81,8 @@ public class DefaultFileImportService implements FileImportService {
         StringTokenizer rowTokenizer = new StringTokenizer(fileAsStr, "\n");
         Language[] langs = new Language[2];
         // header
-        if (rowTokenizer.hasMoreTokens()) {
-            String header = rowTokenizer.nextToken();
-            langs = processHeader(header);
-        }
+        String header = rowTokenizer.nextToken();
+        langs = processHeader(header);
         Map<FileImportActionType, Integer> entityCreation = new HashMap<FileImportActionType, Integer>();
         for (FileImportActionType t: FileImportActionType.values()) {
             entityCreation.put(t, 0);

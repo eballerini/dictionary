@@ -29,6 +29,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Named
 public class DefaultFileImportService implements FileImportService {
 
+    private static final String CARRIAGE_RETURN = "\n";
+    private static final int NUMBER_EXPECTED_TOKENS = 3;
+    private static final String COMMA = ",";
+
     private final Logger log = LoggerFactory.getLogger(DefaultFileImportService.class);
 
     @Inject
@@ -78,11 +82,9 @@ public class DefaultFileImportService implements FileImportService {
         if (StringUtils.isEmpty(fileAsStr)) {
             throw new IllegalArgumentException("file is null");
         }
-        StringTokenizer rowTokenizer = new StringTokenizer(fileAsStr, "\n");
-        Language[] langs = new Language[2];
-        // header
+        StringTokenizer rowTokenizer = new StringTokenizer(fileAsStr, CARRIAGE_RETURN);
         String header = rowTokenizer.nextToken();
-        langs = processHeader(header);
+        Language[] langs = processHeaderAndReturnUsedLanguages(header);
         Map<FileImportActionType, Integer> entityCreation = new HashMap<FileImportActionType, Integer>();
         for (FileImportActionType t: FileImportActionType.values()) {
             entityCreation.put(t, 0);
@@ -102,45 +104,52 @@ public class DefaultFileImportService implements FileImportService {
         fileRepository.save(fileImport);
     }
 
-	// TODO too long - refactor
     private void processRow(String row, Language[] langs, Map<FileImportActionType, Integer> entityCreation) {
-        StringTokenizer sk = new StringTokenizer(row, ",");
+        StringTokenizer sk = new StringTokenizer(row, COMMA);
         String inputWord1 = sk.nextToken().trim();
         String inputWord2 = sk.nextToken().trim();
         String usage = null;
         if (sk.hasMoreTokens()) {
             usage = sk.nextToken().trim();
         }
-        Word word1 = loadOrCreateWord(inputWord1, langs[0], entityCreation);
-        Word word2 = loadOrCreateWord(inputWord2, langs[1], entityCreation);
+        Word word1 = loadOrCreateAndSaveWord(inputWord1, langs[0], entityCreation);
+        Word word2 = loadOrCreateAndSaveWord(inputWord2, langs[1], entityCreation);
         // TODO check that this actually works since we create words in the
         // method if they don't exist
-        boolean word1Exists = word1.getId() == null ? false : true;
-        boolean word2Exists = word2.getId() == null ? false : true;
-        Translation t = null;
-        if (word1Exists && word2Exists) {
-            // check if translation already exists, both ways
-            t = translationRepositoryCustom.findTranslation(word1.getId(), word2.getId());
-            if (t == null) {
-                t = translationRepositoryCustom.findTranslation(word2.getId(), word1.getId());
-            }
-        }
-        // create translation if it doesn't exist yet
-        if (t == null) {
-            t = new Translation();
-            t.setFromWord(word1);
-            t.setToWord(word2);
-            t.setUsage(usage);
-            log.debug("translation between word {} and {} doesn't exist yet. Creating it", word1, word2);
-            translationRepository.save(t);
-            increaseCount(FileImportActionType.TRANSLATION_CREATION, entityCreation);
+        Translation translation = loadTranslationIfExists(word1, word2);
+        if (translation == null) {
+            createAndSaveTranslation(entityCreation, usage, word1, word2);
         }
 
         // TODO update if flag is set
     }
 
-	// TODO too long - refactor
-    private Word loadOrCreateWord(String wordAsStr, Language language, Map<FileImportActionType, Integer> entityCreation) {
+    private void createAndSaveTranslation(Map<FileImportActionType, Integer> entityCreation, String usage, Word word1,
+            Word word2) {
+        Translation translation = new Translation();
+        translation.setFromWord(word1);
+        translation.setToWord(word2);
+        translation.setUsage(usage);
+        log.debug("translation between word {} and {} doesn't exist yet. Creating it", word1, word2);
+        translationRepository.save(translation);
+        increaseCount(FileImportActionType.TRANSLATION_CREATION, entityCreation);
+    }
+
+    private Translation loadTranslationIfExists(Word word1, Word word2) {
+        boolean word1Exists = word1.getId() == null ? false : true;
+        boolean word2Exists = word2.getId() == null ? false : true;
+        Translation translation = null;
+        if (word1Exists && word2Exists) {
+            // check if translation already exists, both ways
+            translation = translationRepositoryCustom.findTranslation(word1.getId(), word2.getId());
+            if (translation == null) {
+                translation = translationRepositoryCustom.findTranslation(word2.getId(), word1.getId());
+            }
+        }
+        return translation;
+    }
+
+    private Word loadOrCreateAndSaveWord(String wordAsStr, Language language, Map<FileImportActionType, Integer> entityCreation) {
         Word word = wordRepositoryCustom.loadWord(wordAsStr, language.getId());
         if (word == null) {
             log.debug("word {} doesn't exist yet. Creating it", wordAsStr);
@@ -153,25 +162,32 @@ public class DefaultFileImportService implements FileImportService {
         return word;
     }
 
-	// TODO too long - refactor
-    private Language[] processHeader(String header) {
+    private Language[] processHeaderAndReturnUsedLanguages(String header) {
         log.debug("header: {}", header);
-        StringTokenizer headerTk = new StringTokenizer(header, ",");
-        if (headerTk.countTokens() != 3) {
-            throw new FileImportException("header shoud contain 3 values: <language1>, <language2>, usage");
-        }
+        StringTokenizer headerTk = new StringTokenizer(header, COMMA);
+        checkHeaderTokenCount(headerTk);
         String language1 = headerTk.nextToken().trim();
         String language2 = headerTk.nextToken().trim();
         String usage = headerTk.nextToken().trim();
+        checkUsage(usage);
 
         Language[] langs = new Language[2];
         langs[0] = loadLanguage(language1);
         langs[1] = loadLanguage(language2);
 
+        return langs;
+    }
+
+    private void checkUsage(String usage) {
         if (!"usage".equals(usage)) {
             throw new FileImportException("header shoud contain 3 values: <language1>, <language2>, usage");
         }
-        return langs;
+    }
+
+    private void checkHeaderTokenCount(StringTokenizer headerTk) {
+        if (headerTk.countTokens() != NUMBER_EXPECTED_TOKENS) {
+            throw new FileImportException("header shoud contain 3 values: <language1>, <language2>, usage");
+        }
     }
 
     private Language loadLanguage(String language) {

@@ -5,6 +5,14 @@
         
         <form name="quizForm" role="form" novalidate ng-submit="submit()" show-validation>
             <div>
+
+                <div>
+                    Select tag: 
+                    <select id="tag" name="tag" ng-model="tag" ng-options="tag as tag.name for tag in tags | orderBy:'name' track by tag.id" disabled="true">
+                        <option value="">any</option>
+                    </select>
+                </div>
+
                 <span>Select languages: from </span>
                 <select  id="from_language" name="from_language" ng-model="from_language" ng-options="language as language.language for language in languages track by language.id">
                 </select>
@@ -32,6 +40,8 @@
                         <span>Hide translations</span>
                     </a>
                 </span>
+
+                
 
                 <div>
                     Num of words this time: {{numWordsSeen}}

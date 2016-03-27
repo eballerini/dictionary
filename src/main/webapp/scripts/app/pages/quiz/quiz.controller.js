@@ -1,10 +1,11 @@
 'use strict';
 
 angular.module('dictionaryApp')
-    .controller('QuizController', function ($scope, $state, $modal, Language, WordSearch, TranslationSearch) {
+    .controller('QuizController', function ($scope, $state, $modal, Language, WordSearch, TranslationSearch, Tag) {
       
         $scope.languages = [];
         $scope.numWordsSeen = 0;
+        $scope.tags = [];
 
         $scope.loadAll = function() {
             Language.query(function(result) {
@@ -13,7 +14,15 @@ angular.module('dictionaryApp')
                $scope.to_language = $scope.languages[1];
             });
         };
+
+        $scope.loadTags = function() {
+            Tag.query(function(result) {
+                $scope.tags = result;
+            });
+        };
+
         $scope.loadAll();
+        $scope.loadTags();
 
         $scope.submit = function() {
             $scope.translations = null;

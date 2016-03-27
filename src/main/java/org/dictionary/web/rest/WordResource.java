@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.codahale.metrics.annotation.Timed;
@@ -159,12 +160,16 @@ public class WordResource {
     
     // TODO add doc
     // TODO check if ES offers this out-of-the-box
+    // TODO refactor: this should become part of the query that we send to the
+    // searchWords method
     @RequestMapping(value = "/_search/words/random/{languageId}", 
             method = RequestMethod.GET, 
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
-    public ResponseEntity<WordAPI> findRandomWordInLanguage(@PathVariable Long languageId) {
+    public ResponseEntity<WordAPI> findRandomWordInLanguage(@PathVariable Long languageId,
+            @RequestParam("tagId") Long tagId) {
         log.debug("languageId: {}", languageId);
+        log.debug("tagId: {}", tagId);
         WordAPI wordAPI = wordService.findRandomWord(languageId);
 
         return Optional.ofNullable(wordAPI)

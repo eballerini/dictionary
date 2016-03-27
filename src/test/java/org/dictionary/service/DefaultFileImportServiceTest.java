@@ -29,6 +29,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.internal.verification.Times;
+import org.springframework.test.util.ReflectionTestUtils;
 
 public class DefaultFileImportServiceTest {
 
@@ -48,9 +49,16 @@ public class DefaultFileImportServiceTest {
 
     @Before
     public void init() {
-        service = new DefaultFileImportService(languageRepositoryCustom, wordRepositoryCustom, wordRepository,
-                translationRepositoryCustom, translationRepository, fileImportTranslator, fileRepository,
-                tagRepository, tagRepositoryCustom);
+        service = new DefaultFileImportService();
+        ReflectionTestUtils.setField(service, "languageRepositoryCustom", languageRepositoryCustom);
+        ReflectionTestUtils.setField(service, "wordRepositoryCustom", wordRepositoryCustom);
+        ReflectionTestUtils.setField(service, "wordRepository", wordRepository);
+        ReflectionTestUtils.setField(service, "translationRepositoryCustom", translationRepositoryCustom);
+        ReflectionTestUtils.setField(service, "translationRepository", translationRepository);
+        ReflectionTestUtils.setField(service, "fileImportTranslator", fileImportTranslator);
+        ReflectionTestUtils.setField(service, "fileRepository", fileRepository);
+        ReflectionTestUtils.setField(service, "tagRepository", tagRepository);
+        ReflectionTestUtils.setField(service, "tagRepositoryCustom", tagRepositoryCustom);
         englishLanguage = mock(Language.class);
         when(englishLanguage.getId()).thenReturn(1L);
         cantoneseLanguage = mock(Language.class);

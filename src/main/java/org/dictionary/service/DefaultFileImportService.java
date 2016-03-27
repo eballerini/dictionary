@@ -74,23 +74,6 @@ public class DefaultFileImportService implements FileImportService {
     // TODO add DB constraint to make language (string) unique
     // TODO add flag to allow to override usage
 
-    public DefaultFileImportService(LanguageRepositoryCustom languageRepositoryCustom,
-            WordRepositoryCustom wordRepositoryCustom, WordRepository wordRepository,
-            TranslationRepositoryCustom translationRepositoryCustom, TranslationRepository translationRepository,
-            FileImportTranslator fileImportTranslator, FileRepository fileRepository, TagRepository tagRepository,
-            TagRepositoryCustom tagRepositoryCustom) {
-        super();
-        this.languageRepositoryCustom = languageRepositoryCustom;
-        this.wordRepositoryCustom = wordRepositoryCustom;
-        this.wordRepository = wordRepository;
-        this.translationRepositoryCustom = translationRepositoryCustom;
-        this.translationRepository = translationRepository;
-        this.fileImportTranslator = fileImportTranslator;
-        this.fileRepository = fileRepository;
-        this.tagRepository = tagRepository;
-        this.tagRepositoryCustom = tagRepositoryCustom;
-    }
-
     @Override
     @Transactional(readOnly = false)
     public Map<FileImportActionType, Integer> importFile(String fileAsStr) {

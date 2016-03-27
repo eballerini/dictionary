@@ -31,6 +31,7 @@ angular.module('dictionaryApp')
                     $scope.success = true;    
                     $scope.numWordsCreated = data.numWordsCreated;
                     $scope.numTranslationsCreated = data.numTranslationsCreated;
+                    $scope.numTagsCreated = data.numTagsCreated;
                 } else {
                     $scope.failure = true;    
                     $scope.message = data.message;
@@ -39,6 +40,7 @@ angular.module('dictionaryApp')
             }).error(function (data, status, headers, config) {
                 console.log('error. Status: ' + status);
                 $scope.failure = true;
+                $scope.message = data.message;
             });
         };
 

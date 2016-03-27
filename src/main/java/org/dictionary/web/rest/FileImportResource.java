@@ -69,9 +69,7 @@ public class FileImportResource {
             indexWordsAndTranslations(maxWordId, maxTranslationId);
         } catch (Exception e) {
             log.error("You failed to upload " + name + " => ", e);
-            // ideally we'd set the report's message when the exception is
-            // of type FileImportException
-            throw new RuntimeException("file could not be uploaded", e);
+            throw new RuntimeException("File could not be uploaded: " + e.getMessage(), e);
         } finally {
             trackImport(report);
         }
@@ -93,6 +91,8 @@ public class FileImportResource {
         report.setNumWordsCreated(numWordsCreated);
         Integer numTranslationsCreated = entityCreation.get(FileImportActionType.TRANSLATION_CREATION);
         report.setNumTranslationsCreated(numTranslationsCreated);
+        Integer numTagsCreated = entityCreation.get(FileImportActionType.TAG_CREATION);
+        report.setNumTagsCreated(numTagsCreated);
         report.setSuccess(true);
         log.debug("You successfully uploaded {}", fileName);
         log.debug("report: {}", report);

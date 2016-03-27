@@ -1,7 +1,9 @@
 package org.dictionary.service;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.inject.Inject;
@@ -11,10 +13,13 @@ import org.apache.commons.lang.StringUtils;
 import org.dictionary.api.FileImportReportAPI;
 import org.dictionary.domain.FileImport;
 import org.dictionary.domain.Language;
+import org.dictionary.domain.Tag;
 import org.dictionary.domain.Translation;
 import org.dictionary.domain.Word;
 import org.dictionary.repository.FileRepository;
 import org.dictionary.repository.LanguageRepositoryCustom;
+import org.dictionary.repository.TagRepository;
+import org.dictionary.repository.TagRepositoryCustom;
 import org.dictionary.repository.TranslationRepository;
 import org.dictionary.repository.TranslationRepositoryCustom;
 import org.dictionary.repository.WordRepository;
@@ -29,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Named
 public class DefaultFileImportService implements FileImportService {
 
+    private static final String TAGS_DELIMITER = "tags:";
     private static final String CARRIAGE_RETURN = "\n";
     private static final int NUMBER_EXPECTED_TOKENS = 3;
     private static final String COMMA = ",";
@@ -56,6 +62,12 @@ public class DefaultFileImportService implements FileImportService {
     @Inject
     private FileRepository fileRepository;
 
+    @Inject
+    private TagRepository tagRepository;
+
+    @Inject
+    private TagRepositoryCustom tagRepositoryCustom;
+
     public DefaultFileImportService() {
     }
 
@@ -65,7 +77,8 @@ public class DefaultFileImportService implements FileImportService {
     public DefaultFileImportService(LanguageRepositoryCustom languageRepositoryCustom,
             WordRepositoryCustom wordRepositoryCustom, WordRepository wordRepository,
             TranslationRepositoryCustom translationRepositoryCustom, TranslationRepository translationRepository,
-            FileImportTranslator fileImportTranslator, FileRepository fileRepository) {
+            FileImportTranslator fileImportTranslator, FileRepository fileRepository, TagRepository tagRepository,
+            TagRepositoryCustom tagRepositoryCustom) {
         super();
         this.languageRepositoryCustom = languageRepositoryCustom;
         this.wordRepositoryCustom = wordRepositoryCustom;
@@ -74,24 +87,32 @@ public class DefaultFileImportService implements FileImportService {
         this.translationRepository = translationRepository;
         this.fileImportTranslator = fileImportTranslator;
         this.fileRepository = fileRepository;
+        this.tagRepository = tagRepository;
+        this.tagRepositoryCustom = tagRepositoryCustom;
     }
 
     @Override
     @Transactional(readOnly = false)
     public Map<FileImportActionType, Integer> importFile(String fileAsStr) {
-        if (StringUtils.isEmpty(fileAsStr)) {
-            throw new IllegalArgumentException("file is null");
-        }
-        StringTokenizer rowTokenizer = new StringTokenizer(fileAsStr, CARRIAGE_RETURN);
-        String header = rowTokenizer.nextToken();
-        Language[] langs = processHeaderAndReturnUsedLanguages(header);
+        checkIfFileIsNullOrEmpty(fileAsStr);
         Map<FileImportActionType, Integer> entityCreation = new HashMap<FileImportActionType, Integer>();
         for (FileImportActionType t: FileImportActionType.values()) {
             entityCreation.put(t, 0);
         }
+        StringTokenizer rowTokenizer = new StringTokenizer(fileAsStr, CARRIAGE_RETURN);
+        String tagHeader = rowTokenizer.nextToken();
+        Set<Tag> tags = new HashSet<>();
+        String header;
+        if (tagHeader.startsWith(TAGS_DELIMITER)) {
+            tags = processTagHeader(tagHeader, entityCreation);
+            header = rowTokenizer.nextToken();
+        } else {
+            header = tagHeader;
+        }
+        Language[] langs = processHeaderAndReturnUsedLanguages(header);
         while (rowTokenizer.hasMoreTokens()) {
             String row = rowTokenizer.nextToken();
-            processRow(row, langs, entityCreation);
+            processRow(row, langs, entityCreation, tags);
         }
 
         return entityCreation;
@@ -104,7 +125,34 @@ public class DefaultFileImportService implements FileImportService {
         fileRepository.save(fileImport);
     }
 
-    private void processRow(String row, Language[] langs, Map<FileImportActionType, Integer> entityCreation) {
+    private void checkIfFileIsNullOrEmpty(String fileAsStr) {
+        if (StringUtils.isEmpty(fileAsStr)) {
+            throw new FileImportException("file is null");
+        }
+    }
+
+    private Set<Tag> processTagHeader(String tagHeader, Map<FileImportActionType, Integer> entityCreation) {
+        log.debug("tag header: {}", tagHeader);
+        Set<Tag> tags = new HashSet<Tag>();
+        String tagsWithoutDelimiter = tagHeader.substring(TAGS_DELIMITER.length(), tagHeader.length());
+        StringTokenizer tagTokens = new StringTokenizer(tagsWithoutDelimiter, COMMA);
+        while (tagTokens.hasMoreTokens()) {
+            String tagName = tagTokens.nextToken().trim();
+            Tag tag = tagRepositoryCustom.findByName(tagName);
+            if (tag == null) {
+                tag = new Tag();
+                tag.setName(tagName);
+                tagRepository.save(tag);
+                increaseCount(FileImportActionType.TAG_CREATION, entityCreation);
+            }
+            tags.add(tag);
+        }
+        return tags;
+    }
+
+    // TODO reduce # of args
+    private void processRow(String row, Language[] langs, Map<FileImportActionType, Integer> entityCreation,
+            Set<Tag> tags) {
         StringTokenizer sk = new StringTokenizer(row, COMMA);
         String inputWord1 = sk.nextToken().trim();
         String inputWord2 = sk.nextToken().trim();
@@ -112,10 +160,8 @@ public class DefaultFileImportService implements FileImportService {
         if (sk.hasMoreTokens()) {
             usage = sk.nextToken().trim();
         }
-        Word word1 = loadOrCreateAndSaveWord(inputWord1, langs[0], entityCreation);
-        Word word2 = loadOrCreateAndSaveWord(inputWord2, langs[1], entityCreation);
-        // TODO check that this actually works since we create words in the
-        // method if they don't exist
+        Word word1 = loadOrCreateAndSaveWord(inputWord1, langs[0], entityCreation, tags);
+        Word word2 = loadOrCreateAndSaveWord(inputWord2, langs[1], entityCreation, tags);
         Translation translation = loadTranslationIfExists(word1, word2);
         if (translation == null) {
             createAndSaveTranslation(entityCreation, usage, word1, word2);
@@ -149,16 +195,20 @@ public class DefaultFileImportService implements FileImportService {
         return translation;
     }
 
-    private Word loadOrCreateAndSaveWord(String wordAsStr, Language language, Map<FileImportActionType, Integer> entityCreation) {
+    // TODO reduce # of args
+    private Word loadOrCreateAndSaveWord(String wordAsStr, Language language,
+            Map<FileImportActionType, Integer> entityCreation, Set<Tag> tags) {
         Word word = wordRepositoryCustom.loadWord(wordAsStr, language.getId());
         if (word == null) {
             log.debug("word {} doesn't exist yet. Creating it", wordAsStr);
             word = new Word();
             word.setWord(wordAsStr);
             word.setLanguage(language);
-            wordRepository.save(word);
             increaseCount(FileImportActionType.WORD_CREATION, entityCreation);
         }
+        word.setTags(tags);
+        wordRepository.save(word);
+
         return word;
     }
 

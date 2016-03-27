@@ -7,7 +7,7 @@ import org.dictionary.domain.Word;
 public interface WordRepositoryCustom {
 
     // there may be a way to do this with JPA directly
-    int countWordsInLanguage(long id);
+    int countWordsInLanguage(long languageId);
 
     Word loadWord(long languageId, int offset);
 

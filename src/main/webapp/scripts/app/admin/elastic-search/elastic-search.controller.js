@@ -12,7 +12,7 @@ angular.module('dictionaryApp')
         
         $scope.submit = function() {
         	$("#submit").addClass("disabled");
-        	$http.post('api/indices/build')
+        	$http.post('api/tasks/build-search-index')
         	.success(function (data, status) {
             	$scope.processed = true;    
                 if (data) {

@@ -27,7 +27,7 @@ public class IndexResource {
     @Inject
     private TranslationSearchService translationSearchService;
 
-    @RequestMapping(value = "/indices/build", method = RequestMethod.POST)
+    @RequestMapping(value = "/tasks/build-search-index", method = RequestMethod.POST)
     @Timed
     @Secured(AuthoritiesConstants.ADMIN)
     public ResponseEntity<Boolean> buildIndex() {

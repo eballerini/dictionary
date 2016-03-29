@@ -9,8 +9,10 @@ import org.dictionary.domain.Word;
 import org.dictionary.repository.WordRepositoryCustom;
 import org.dictionary.repository.search.WordSearchRepository;
 import org.dictionary.util.DictionaryConstants;
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 @Named
 public class DefaultWordSearchService implements WordSearchService {
@@ -27,6 +29,7 @@ public class DefaultWordSearchService implements WordSearchService {
     }
 
     @Override
+    @Transactional(readOnly = false)
     public void indexWords(long startIndex) {
 
         long id = startIndex;
@@ -36,6 +39,9 @@ public class DefaultWordSearchService implements WordSearchService {
             List<Word> words = wordRepositoryCustom.load(id, DictionaryConstants.PAGE_SIZE);
             numResults = words.size();
             if (!words.isEmpty()) {
+                // this works but is not efficient - we should try to load the
+                // tags along with the words
+                words.stream().forEach(w -> Hibernate.initialize(w.getTags()));
                 // TODO check whether I should use index or save
                 words.stream().forEach(w -> wordSearchRepository.index(w));
                 id = words.get(numResults - 1).getId() + 1;

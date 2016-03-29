@@ -29,7 +29,9 @@ angular.module('dictionaryApp')
             $scope.show = false;
             $scope.numWordsSeen = $scope.numWordsSeen + 1;
 
-            WordSearch.findRandom({languageId: $scope.from_language.id}, function(result) {
+            var tagId = $scope.tag == null ? null : $scope.tag.id;
+
+            WordSearch.findRandom({languageId: $scope.from_language.id, tagId: tagId}, function(result) {
                 $scope.word = result;
                 $scope.loaded = true;
                 $scope.errorLoading = false;
@@ -68,6 +70,10 @@ angular.module('dictionaryApp')
             var tmp_language = $scope.from_language;
             $scope.from_language = $scope.to_language;
             $scope.to_language = tmp_language;
+            $scope.reset();
+        }
+
+        $scope.reset = function() {
             $scope.numWordsSeen = 0;
             $scope.loaded = false;
             $scope.show = false;

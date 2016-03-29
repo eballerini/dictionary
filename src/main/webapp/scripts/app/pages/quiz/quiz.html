@@ -8,7 +8,7 @@
 
                 <div>
                     Select tag: 
-                    <select id="tag" name="tag" ng-model="tag" ng-options="tag as tag.name for tag in tags | orderBy:'name' track by tag.id" disabled="true">
+                    <select id="tag" name="tag" ng-model="tag" ng-options="tag as tag.name for tag in tags | orderBy:'name' track by tag.id" ng-change="reset()" disabled>
                         <option value="">any</option>
                     </select>
                 </div>

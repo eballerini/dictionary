@@ -167,7 +167,7 @@ public class WordResource {
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
     public ResponseEntity<WordAPI> findRandomWordInLanguage(@PathVariable Long languageId,
-            @RequestParam("tagId") Long tagId) {
+            @RequestParam(value = "tagId", required = false) Long tagId) {
         log.debug("languageId: {}", languageId);
         log.debug("tagId: {}", tagId);
         WordAPI wordAPI = wordService.findRandomWord(languageId);

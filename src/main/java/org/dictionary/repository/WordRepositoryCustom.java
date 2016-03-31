@@ -7,8 +7,10 @@ import org.dictionary.domain.Word;
 public interface WordRepositoryCustom {
 
     // there may be a way to do this with JPA directly
+    @Deprecated
     int countWordsInLanguage(long languageId);
 
+    @Deprecated
     int countWordsInLanguageWithTag(long languageId, long tagId);
 
     Word loadWord(long languageId, int offset);

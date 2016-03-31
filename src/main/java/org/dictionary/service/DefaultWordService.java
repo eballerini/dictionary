@@ -8,6 +8,7 @@ import javax.inject.Named;
 import org.dictionary.api.WordAPI;
 import org.dictionary.domain.Word;
 import org.dictionary.repository.WordRepositoryCustom;
+import org.dictionary.repository.search.WordSearchRepository;
 import org.dictionary.translator.WordTranslator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,9 @@ public class DefaultWordService implements WordService {
     @Inject
     private WordRepositoryCustom wordRepositoryCustom;
 
+    @Inject
+    private WordSearchRepository wordSearchRepository;
+
     public DefaultWordService() {
     }
 
@@ -31,11 +35,11 @@ public class DefaultWordService implements WordService {
         int numWords = 0;
         // this could be / should be done in a nicer way to avoid all these if
         if (tagId == null) {
-            numWords = wordRepositoryCustom.countWordsInLanguage(languageId);
-            log.debug("[from DB] num words for language {}: {}", languageId, numWords);
+            numWords = wordSearchRepository.countByLanguageId(languageId);
+            log.debug("[from ES] num words for language {}: {}", languageId, numWords);
         } else {
-            numWords = wordRepositoryCustom.countWordsInLanguageWithTag(languageId, tagId);
-            log.debug("[from DB] num words for language {} with tag {}: {}", languageId, tagId, numWords);
+            numWords = wordSearchRepository.countByLanguageIdAndTagsId(languageId, tagId);
+            log.debug("[from ES] num words for language {} with tag {}: {}", languageId, tagId, numWords);
         }
 
         if (numWords == 0) {

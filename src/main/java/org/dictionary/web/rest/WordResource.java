@@ -170,7 +170,7 @@ public class WordResource {
             @RequestParam(value = "tagId", required = false) Long tagId) {
         log.debug("languageId: {}", languageId);
         log.debug("tagId: {}", tagId);
-        WordAPI wordAPI = wordService.findRandomWord(languageId);
+        WordAPI wordAPI = wordService.findRandomWord(languageId, tagId);
 
         return Optional.ofNullable(wordAPI)
                 .map(word -> new ResponseEntity<>(wordAPI, HttpStatus.OK))

@@ -24,11 +24,19 @@ public class DefaultWordService implements WordService {
     }
 
     @Override
-    public WordAPI findRandomWord(Long languageId) {
+    public WordAPI findRandomWord(Long languageId, Long tagId) {
 
+        log.debug("tagId: {}", tagId);
         // find # of words in fromLanguageId
-        int numWords = wordRepositoryCustom.countWordsInLanguage(languageId);
-        log.debug("num words for language {}: {}", languageId, numWords);
+        int numWords = 0;
+        // this could be / should be done in a nicer way to avoid all these if
+        if (tagId == null) {
+            numWords = wordRepositoryCustom.countWordsInLanguage(languageId);
+            log.debug("[from DB] num words for language {}: {}", languageId, numWords);
+        } else {
+            numWords = wordRepositoryCustom.countWordsInLanguageWithTag(languageId, tagId);
+            log.debug("[from DB] num words for language {} with tag {}: {}", languageId, tagId, numWords);
+        }
 
         if (numWords == 0) {
             return null;
@@ -38,7 +46,13 @@ public class DefaultWordService implements WordService {
         Random random = new Random();
 
         int wordOffset = random.nextInt(numWords);
-        Word word = wordRepositoryCustom.loadWord(languageId, wordOffset);
+        Word word;
+
+        if (tagId == null) {
+            word = wordRepositoryCustom.loadWord(languageId, wordOffset);
+        } else {
+            word = wordRepositoryCustom.loadWordForLanguageAndTag(languageId, tagId, wordOffset);
+        }
 
         WordAPI wordAPI = WordTranslator.toAPI(word);
 

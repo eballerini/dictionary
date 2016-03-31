@@ -30,9 +30,34 @@ public class DefaultWordRepositoryCustom implements WordRepositoryCustom {
     }
 
     @Override
+    public int countWordsInLanguageWithTag(long languageId, long tagId) {
+        Query q = em
+                .createQuery("select count(*) from Word w join w.tags t where t.id = :tagId and w.language.id = :languageId ");
+        q.setParameter("languageId", languageId);
+        q.setParameter("tagId", tagId);
+        int num = ((Long) q.getSingleResult()).intValue();
+        return num;
+    }
+
+    @Override
     public Word loadWord(long languageId, int offset) {
         Query q = em.createQuery("from Word w where w.language.id = :languageId order by w.id");
         q.setParameter("languageId", languageId);
+        q.setMaxResults(1);
+        q.setFirstResult(offset);
+        Object o = q.getSingleResult();
+        if (o == null) {
+            return null;
+        }
+        return (Word) o;
+    }
+
+    @Override
+    public Word loadWordForLanguageAndTag(long languageId, long tagId, int offset) {
+        Query q = em
+                .createQuery("select w from Word w join w.tags t where t.id = :tagId and w.language.id = :languageId order by w.id");
+        q.setParameter("languageId", languageId);
+        q.setParameter("tagId", tagId);
         q.setMaxResults(1);
         q.setFirstResult(offset);
         Object o = q.getSingleResult();

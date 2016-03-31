@@ -73,11 +73,22 @@ angular.module('dictionaryApp')
             $scope.reset();
         }
 
+        $scope.pickRandomTag = function() {
+            var numTags = $scope.tags.length;
+            var tagNum = getRandomNumber(0, numTags - 1);
+            $scope.tag = $scope.tags[tagNum];
+            $scope.reset();
+        }
+
         $scope.reset = function() {
             $scope.numWordsSeen = 0;
             $scope.loaded = false;
             $scope.show = false;
             $scope.translations = null;
+        }
+
+        function getRandomNumber(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
         }
 
     });

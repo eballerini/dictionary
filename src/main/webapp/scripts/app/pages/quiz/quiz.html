@@ -28,6 +28,12 @@
                     <span>Switch languages</span>
                 </a>
 
+                <span ng-if="tags.length > 0">
+                    <a href="#" type="button" class="btn btn-primary btn-xs" ng-click="pickRandomTag()">
+                        <span>Pick random tag</span>
+                    </a>
+                </span>
+
                 <button type="submit" class="btn btn-primary btn-xs">
                     <span>Go</span>
                 </button>

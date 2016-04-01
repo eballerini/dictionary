@@ -36,8 +36,7 @@ public class DefaultTranslationSearchService implements TranslationSearchService
             List<Translation> translations = translationRepositoryCustom.load(id, DictionaryConstants.PAGE_SIZE);
             numResults = translations.size();
             if (!translations.isEmpty()) {
-                // TODO check whether I should use index or save
-                translations.stream().forEach(w -> translationSearchRepository.index(w));
+                translationSearchRepository.save(translations);
                 id = translations.get(numResults - 1).getId() + 1;
                 log.debug("indexed {} translations", numResults);
             }

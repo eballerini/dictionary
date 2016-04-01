@@ -42,8 +42,7 @@ public class DefaultWordSearchService implements WordSearchService {
                 // this works but is not efficient - we should try to load the
                 // tags along with the words
                 words.stream().forEach(w -> Hibernate.initialize(w.getTags()));
-                // TODO check whether I should use index or save
-                words.stream().forEach(w -> wordSearchRepository.index(w));
+                wordSearchRepository.save(words);
                 id = words.get(numResults - 1).getId() + 1;
                 log.debug("indexed {} words", numResults);
             }

@@ -9,7 +9,6 @@ import javax.inject.Named;
 import org.dictionary.api.WordAPI;
 import org.dictionary.domain.Word;
 import org.dictionary.repository.WordRepositoryCustom;
-import org.dictionary.repository.search.WordSearchRepository;
 import org.dictionary.translator.WordTranslator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +22,7 @@ public class DefaultWordService implements WordService {
     private WordRepositoryCustom wordRepositoryCustom;
 
     @Inject
-    private WordSearchRepository wordSearchRepository;
+    private WordStrategyFactory wordStrategyFactory;
 
     public DefaultWordService() {
     }
@@ -32,16 +31,8 @@ public class DefaultWordService implements WordService {
     public WordAPI findRandomWord(Long languageId, Optional<Long> tagId) {
 
         log.debug("tagId: {}", tagId);
-        // find # of words in fromLanguageId
-        int numWords = 0;
-        // this could be / should be done in a nicer way to avoid all these if
-        if (tagId.isPresent()) {
-            numWords = wordSearchRepository.countByLanguageIdAndTagsId(languageId, tagId.get());
-            log.debug("[from ES] num words for language {} with tag {}: {}", languageId, tagId.get(), numWords);
-        } else {
-            numWords = wordSearchRepository.countByLanguageId(languageId);
-            log.debug("[from ES] num words for language {}: {}", languageId, numWords);
-        }
+        WordStrategy wordStrategy = wordStrategyFactory.createWordStrategy(languageId, tagId);
+        int numWords = wordStrategy.countWords();
 
         if (numWords == 0) {
             return null;
@@ -51,14 +42,7 @@ public class DefaultWordService implements WordService {
         Random random = new Random();
 
         int wordOffset = random.nextInt(numWords);
-        Word word;
-
-        if (tagId.isPresent()) {
-            word = wordRepositoryCustom.loadWordForLanguageAndTag(languageId, tagId.get(), wordOffset);
-        } else {
-            word = wordRepositoryCustom.loadWord(languageId, wordOffset);
-        }
-
+        Word word = wordStrategy.loadWord(wordOffset);
         WordAPI wordAPI = WordTranslator.toAPI(word);
 
         return wordAPI;

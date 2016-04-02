@@ -1,5 +1,6 @@
 package org.dictionary.service;
 
+import java.util.Optional;
 import java.util.Random;
 
 import javax.inject.Inject;
@@ -28,18 +29,18 @@ public class DefaultWordService implements WordService {
     }
 
     @Override
-    public WordAPI findRandomWord(Long languageId, Long tagId) {
+    public WordAPI findRandomWord(Long languageId, Optional<Long> tagId) {
 
         log.debug("tagId: {}", tagId);
         // find # of words in fromLanguageId
         int numWords = 0;
         // this could be / should be done in a nicer way to avoid all these if
-        if (tagId == null) {
+        if (tagId.isPresent()) {
+            numWords = wordSearchRepository.countByLanguageIdAndTagsId(languageId, tagId.get());
+            log.debug("[from ES] num words for language {} with tag {}: {}", languageId, tagId.get(), numWords);
+        } else {
             numWords = wordSearchRepository.countByLanguageId(languageId);
             log.debug("[from ES] num words for language {}: {}", languageId, numWords);
-        } else {
-            numWords = wordSearchRepository.countByLanguageIdAndTagsId(languageId, tagId);
-            log.debug("[from ES] num words for language {} with tag {}: {}", languageId, tagId, numWords);
         }
 
         if (numWords == 0) {
@@ -52,10 +53,10 @@ public class DefaultWordService implements WordService {
         int wordOffset = random.nextInt(numWords);
         Word word;
 
-        if (tagId == null) {
-            word = wordRepositoryCustom.loadWord(languageId, wordOffset);
+        if (tagId.isPresent()) {
+            word = wordRepositoryCustom.loadWordForLanguageAndTag(languageId, tagId.get(), wordOffset);
         } else {
-            word = wordRepositoryCustom.loadWordForLanguageAndTag(languageId, tagId, wordOffset);
+            word = wordRepositoryCustom.loadWord(languageId, wordOffset);
         }
 
         WordAPI wordAPI = WordTranslator.toAPI(word);

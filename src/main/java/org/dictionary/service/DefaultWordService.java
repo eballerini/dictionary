@@ -28,14 +28,14 @@ public class DefaultWordService implements WordService {
     }
 
     @Override
-    public WordAPI findRandomWord(Long languageId, Optional<Long> tagId) {
+    public Optional<WordAPI> findRandomWord(Long languageId, Optional<Long> tagId) {
 
         log.debug("tagId: {}", tagId);
         WordStrategy wordStrategy = wordStrategyFactory.createWordStrategy(languageId, tagId);
         int numWords = wordStrategy.countWords();
 
         if (numWords == 0) {
-            return null;
+            return Optional.empty();
         }
 
         // pick a random one
@@ -45,7 +45,7 @@ public class DefaultWordService implements WordService {
         Word word = wordStrategy.loadWord(wordOffset);
         WordAPI wordAPI = WordTranslator.toAPI(word);
 
-        return wordAPI;
+        return Optional.of(wordAPI);
     }
 
     @Override

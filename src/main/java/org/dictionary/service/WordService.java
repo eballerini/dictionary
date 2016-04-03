@@ -6,7 +6,7 @@ import org.dictionary.api.WordAPI;
 
 public interface WordService {
 
-    WordAPI findRandomWord(Long languageId, Optional<Long> tagId);
+    Optional<WordAPI> findRandomWord(Long languageId, Optional<Long> tagId);
 
     long findMaxWordId();
 }

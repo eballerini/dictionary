@@ -12,6 +12,7 @@ public class TranslationTranslator {
         }
         TranslationAPI translationAPI = new TranslationAPI();
         translationAPI.setId(translation.getId());
+        // TODO need to add fromWord
         translationAPI.setToWord(toWordAPI);
         translationAPI.setPriority(translation.getPriority());
         translationAPI.setUsage(translation.getUsage());

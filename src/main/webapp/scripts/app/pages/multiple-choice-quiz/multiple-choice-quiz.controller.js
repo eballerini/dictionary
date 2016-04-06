@@ -8,6 +8,9 @@ angular.module('dictionaryApp')
         $scope.languages = [];
         $scope.numWordsSeen = 0;
         $scope.tags = [];
+        $scope.selected_num_words = 5;
+        $scope.num_words = [5, 10, 20];
+
 
         $scope.loadAll = function() {
             Language.query(function(result) {

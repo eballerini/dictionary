@@ -1,18 +1,18 @@
 'use strict';
 
 angular.module('dictionaryApp')
-    .controller('MultipleChoiceQuizController', function ($scope, $state, $modal, Language, WordSearch, TranslationSearch, Tag) {
+    .controller('MultipleChoiceQuizController', function ($scope, $state, $modal, Language, WordSearch, TranslationSearch, Tag, MultipleChoiceQuiz) {
 
         // TODO clean
       
         $scope.languages = [];
-        $scope.numWordsSeen = 0;
+        // $scope.numWordsSeen = 0;
         $scope.tags = [];
         $scope.selected_num_words = 5;
         $scope.num_words = [5, 10, 20];
 
 
-        $scope.loadAll = function() {
+        $scope.loadLanguages = function() {
             Language.query(function(result) {
                $scope.languages = result;
                $scope.from_language = $scope.languages[0];
@@ -26,11 +26,30 @@ angular.module('dictionaryApp')
             });
         };
 
-        $scope.loadAll();
+        $scope.loadLanguages();
         $scope.loadTags();
 
         $scope.submit = function() {
-            alert('TODO');
+            // alert('TODO');
+            var tagId = $scope.tag == null ? null : $scope.tag.id;
+
+            MultipleChoiceQuiz.query({fromLanguageId: $scope.from_language.id, 
+                toLanguageId: $scope.to_language.id, 
+                tagId: tagId, 
+                selectedNumWords: $scope.selected_num_words}, function(result) {
+                console.log('loaded');
+                // $scope.word = result;
+                // $scope.loaded = true;
+                // $scope.errorLoading = false;
+                // findTranslations($scope.word.id, $scope.to_language.id);
+            }, function(response) {
+                alert('error');
+                if(response.status === 404) {
+                    $scope.loaded = false;
+                    $scope.errorLoading = true;
+                    console.log('no words found');
+                }
+            });
             // $scope.translations = null;
             // $scope.show = false;
             // $scope.numWordsSeen = $scope.numWordsSeen + 1;
@@ -52,25 +71,25 @@ angular.module('dictionaryApp')
 
         }
 
-        $scope.showTranslations = function () {
-            $scope.show = true;
-        }
+        // $scope.showTranslations = function () {
+        //     $scope.show = true;
+        // }
 
-        $scope.hideTranslations = function () {
-            $scope.show = false;
-        }
+        // $scope.hideTranslations = function () {
+        //     $scope.show = false;
+        // }
 
-        function findTranslations(wordId, toLanguageId) {
-            TranslationSearch.find({wordId: wordId, toLanguageId: toLanguageId}, function(result) {
-                $scope.translations = result;
-                $scope.translationsReady = true;
-            }, function(response) {
-                if(response.status === 404) {
-                    $scope.translationsReady = false;
-                    console.log('could not load translations');
-                }
-            });
-        }
+        // function findTranslations(wordId, toLanguageId) {
+        //     TranslationSearch.find({wordId: wordId, toLanguageId: toLanguageId}, function(result) {
+        //         $scope.translations = result;
+        //         $scope.translationsReady = true;
+        //     }, function(response) {
+        //         if(response.status === 404) {
+        //             $scope.translationsReady = false;
+        //             console.log('could not load translations');
+        //         }
+        //     });
+        // }
 
         $scope.switchLanguages = function() {
             var tmp_language = $scope.from_language;
@@ -87,7 +106,7 @@ angular.module('dictionaryApp')
         }
 
         $scope.reset = function() {
-            $scope.numWordsSeen = 0;
+            // $scope.numWordsSeen = 0;
             $scope.loaded = false;
             $scope.show = false;
             $scope.translations = null;

@@ -6,9 +6,18 @@ public class MultipleChoiceQuestionAPI {
 
     private WordAPI word;
     private Set<WordAPI> answers;
+    private Long answerWordId;
 
     public WordAPI getWord() {
         return word;
+    }
+
+    public Long getAnswerWordId() {
+        return answerWordId;
+    }
+
+    public void setAnswerWordId(Long answerWordId) {
+        this.answerWordId = answerWordId;
     }
 
     public void setWord(WordAPI word) {
@@ -27,6 +36,7 @@ public class MultipleChoiceQuestionAPI {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ((answerWordId == null) ? 0 : answerWordId.hashCode());
         result = prime * result + ((answers == null) ? 0 : answers.hashCode());
         result = prime * result + ((word == null) ? 0 : word.hashCode());
         return result;
@@ -41,6 +51,11 @@ public class MultipleChoiceQuestionAPI {
         if (getClass() != obj.getClass())
             return false;
         MultipleChoiceQuestionAPI other = (MultipleChoiceQuestionAPI) obj;
+        if (answerWordId == null) {
+            if (other.answerWordId != null)
+                return false;
+        } else if (!answerWordId.equals(other.answerWordId))
+            return false;
         if (answers == null) {
             if (other.answers != null)
                 return false;
@@ -56,7 +71,8 @@ public class MultipleChoiceQuestionAPI {
 
     @Override
     public String toString() {
-        return "MultipleChoiceQuestionAPI [word=" + word + ", answers=" + answers + "]";
+        return "MultipleChoiceQuestionAPI [word=" + word + ", answers=" + answers + ", answerWordId=" + answerWordId
+                + "]";
     }
 
 }

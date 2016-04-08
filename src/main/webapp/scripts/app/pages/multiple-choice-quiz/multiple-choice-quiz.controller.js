@@ -8,8 +8,11 @@ angular.module('dictionaryApp')
         $scope.languages = [];
         // $scope.numWordsSeen = 0;
         $scope.tags = [];
-        $scope.selected_num_words = 5;
-        $scope.num_words = [5, 10, 20];
+        $scope.selected_num_words = 2;
+        $scope.num_words = [2, 5, 10, 20];
+        $scope.words = [];
+        $scope.current_word_index = 0;
+        $scope.total_num_words = 0;
 
 
         $scope.loadLanguages = function() {
@@ -29,17 +32,21 @@ angular.module('dictionaryApp')
         $scope.loadLanguages();
         $scope.loadTags();
 
-        $scope.submit = function() {
-            // alert('TODO');
+        $scope.loadWords = function() {
+
             var tagId = $scope.tag == null ? null : $scope.tag.id;
 
             MultipleChoiceQuiz.query({fromLanguageId: $scope.from_language.id, 
                 toLanguageId: $scope.to_language.id, 
                 tagId: tagId, 
                 selectedNumWords: $scope.selected_num_words}, function(result) {
+
                 console.log('loaded');
+                $scope.words = result.questions;
+                console.log($scope.words);
+                $scope.total_num_words = $scope.words.length;
                 // $scope.word = result;
-                // $scope.loaded = true;
+                $scope.loaded = true;
                 // $scope.errorLoading = false;
                 // findTranslations($scope.word.id, $scope.to_language.id);
             }, function(response) {
@@ -91,6 +98,10 @@ angular.module('dictionaryApp')
         //     });
         // }
 
+        $scope.submit = function() {
+            alert('TODO');
+        }
+
         $scope.switchLanguages = function() {
             var tmp_language = $scope.from_language;
             $scope.from_language = $scope.to_language;
@@ -110,6 +121,20 @@ angular.module('dictionaryApp')
             $scope.loaded = false;
             $scope.show = false;
             $scope.translations = null;
+        }
+
+        $scope.isLastWord = function() {
+            if ($scope.current_word_index < $scope.total_num_words - 1) {
+                return false;
+            }
+            return true;
+        }
+
+        $scope.nextWord = function() {
+            if ($scope.isLastWord()) {
+                return;
+            }
+            $scope.current_word_index++;
         }
 
         function getRandomNumber(min, max) {

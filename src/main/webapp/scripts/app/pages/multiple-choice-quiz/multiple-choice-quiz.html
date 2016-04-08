@@ -6,60 +6,76 @@
         <form name="multipleChoiceQuizForm" role="form" novalidate ng-submit="submit()" show-validation>
             <div>
 
-                <div>
-                    Select tag: 
-                    <select id="tag" name="tag" ng-model="tag" ng-options="tag as tag.name for tag in tags | orderBy:'name' track by tag.id" ng-change="reset()">
-                        <option value="">any</option>
+                <div id="selection" ng-if="!loaded">
+
+                    <div>
+                        Select tag: 
+                        <select id="tag" name="tag" ng-model="tag" ng-options="tag as tag.name for tag in tags | orderBy:'name' track by tag.id" ng-change="reset()">
+                            <option value="">any</option>
+                        </select>
+                        <span ng-if="tags.length > 0">
+                        <a href="#" type="button" class="btn btn-primary btn-xs" ng-click="pickRandomTag()">
+                            <span>Pick random tag</span>
+                        </a>
+                    </span>
+                    </div>
+
+                    <span>Select languages: from </span>
+                    <select  id="from_language" name="from_language" ng-model="from_language" ng-options="language as language.language for language in languages track by language.id">
                     </select>
-                    <span ng-if="tags.length > 0">
-                    <a href="#" type="button" class="btn btn-primary btn-xs" ng-click="pickRandomTag()">
-                        <span>Pick random tag</span>
+
+                    to
+
+                    <select  id="to_language" name="to_language" ng-model="to_language" ng-options="language as language.language for language in languages track by language.id">
+                    </select>
+
+                    </span>&nbsp;<span>
+
+                    <a href="#" type="button" class="btn btn-primary btn-xs" ng-click="switchLanguages()">
+                        <span>Switch languages</span>
+                    </a>                
+
+                    <div>
+                        Number of words:
+                        <select id="num_words" name="num_words" ng-model="selected_num_words" ng-options="n for n in num_words">
+                        </select>
+                    </div>
+
+                    <a href="#" type="button" class="btn btn-primary btn-xs" ng-click="loadWords()">
+                        <span>Start</span>
                     </a>
-                </span>
-                </div>
-
-                <span>Select languages: from </span>
-                <select  id="from_language" name="from_language" ng-model="from_language" ng-options="language as language.language for language in languages track by language.id">
-                </select>
-
-                to
-
-                <select  id="to_language" name="to_language" ng-model="to_language" ng-options="language as language.language for language in languages track by language.id">
-                </select>
-
-                </span>&nbsp;<span>
-
-                <a href="#" type="button" class="btn btn-primary btn-xs" ng-click="switchLanguages()">
-                    <span>Switch languages</span>
-                </a>                
-
-                <div>
-                    Number of words:
-                    <select id="num_words" name="num_words" ng-model="selected_num_words" ng-options="n for n in num_words">
-                    </select>
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-xs">
-                    <span>Start</span>
-                </button>
-
-                <div ng-if="loaded">
-                    <span class="label label-default">{{word.word}}</span>
                 </div>
 
                 <div ng-if="errorLoading" class="alert alert-danger">
                     <span>Could not find any words in {{from_language.language}}</span>
                 </div>
 
-                <div ng-if="show">
-                    <ul>
-                        <li ng-repeat="translation in translations track by translation.id">
-                            <div>{{translation.toWord.word}}</div>
-                            <div ng-if="translation.usage != null">Usage: {{translation.usage}}</div>
+                <div id="question" ng-if="loaded">
+                    <div>
+                        Word {{ current_word_index + 1 }} / {{ total_num_words }}
+                        <div id="word">
+                            <div><label>{{ words[current_word_index].word.word }}</label></div>
+                            <div id="answers">
+                                <div ng-repeat="answer in words[current_word_index].answers">
+                                    <input type="radio" name="answer" ng-model="words[current_word_index].answerWordId" ng-value="answer.id" /> {{answer.word}}
+                                </div>
+                            </div>
+                        </div>
 
-                        </li>
-                    </ul>
-                <div>
+                    </div>
+                    <div>
+                        <a href="#" type="button" class="btn btn-primary btn-xs" ng-click="nextWord()" ng-if="!isLastWord()">
+                            <span>Next word</span>
+                        </a>
+                    </div>
+
+                    <div>
+                        <button type="submit" class="btn btn-primary btn-xs" ng-if="isLastWord()">
+                            <span>Submit</span>
+                        </button>
+                    </div>
+
+                </div>
                    
             </div>
 

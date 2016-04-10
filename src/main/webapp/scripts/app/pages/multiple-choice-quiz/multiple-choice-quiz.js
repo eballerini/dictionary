@@ -20,4 +20,21 @@ angular.module('dictionaryApp')
                     
                 }
             })
+            .state('multiple-choice-quiz.questions', {
+                url: '/multiple-choice-quiz-questions',
+                parent: 'site',
+                data: {
+                    authorities: ['ROLE_USER'],
+                    pageTitle: 'MultipleChoiceQuiz'
+                },
+                views: {
+                    'content@': {
+                        templateUrl: 'scripts/app/pages/multiple-choice-quiz/multiple-choice-quiz-questions.html',
+                        controller: 'MultipleChoiceQuizQuestionController'
+                    }
+                },
+                resolve: {
+                    
+                }
+            })
      });

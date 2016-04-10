@@ -1,0 +1,46 @@
+<div>
+    <h2>Multiple Choice Quiz</h2>
+    
+    <div>
+        
+        <form name="multipleChoiceQuizForm" role="form" novalidate ng-submit="submit()" show-validation>
+            <div>
+
+                <div ng-if="errorLoading" class="alert alert-danger">
+                    <span>Could not find any words in {{from_language.language}}</span>
+                </div>
+
+
+                <div id="question" ng-if="loaded">
+                    <div>
+                        Word {{ current_word_index + 1 }} / {{ total_num_words }}
+                        <div id="word">
+                            <div><label>{{ words[current_word_index].word.word }}</label></div>
+                            <div id="answers">
+                                <div ng-repeat="answer in words[current_word_index].answers">
+                                    <input type="radio" name="answer" ng-model="words[current_word_index].answerWordId" ng-value="answer.id" /> {{answer.word}}
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div>
+                        <a href="#/multiple-choice-quiz-questions" type="button" class="btn btn-primary btn-xs" ng-click="nextWord()" ng-if="!isLastWord()">
+                            <span>Next word</span>
+                        </a>
+                    </div>
+
+                    <div>
+                        <button type="submit" class="btn btn-primary btn-xs" ng-if="isLastWord()">
+                            <span>Submit</span>
+                        </button>
+                    </div>
+
+                </div>
+                   
+            </div>
+
+        </form>
+
+    </div>
+</div>

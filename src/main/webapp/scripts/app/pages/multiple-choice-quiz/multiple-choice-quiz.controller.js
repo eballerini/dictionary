@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('dictionaryApp')
-    .controller('MultipleChoiceQuizController', function ($scope, $state, $modal, Language, WordSearch, TranslationSearch, Tag, MultipleChoiceQuiz) {
+    .controller('MultipleChoiceQuizController', function ($scope, $state, $modal, Language, WordSearch, TranslationSearch, Tag, MultipleChoiceQuiz, MultipleChoiceQuizQuestionService) {
 
       
         $scope.languages = [];
@@ -11,7 +11,6 @@ angular.module('dictionaryApp')
         $scope.words = [];
         $scope.current_word_index = 0;
         $scope.total_num_words = 0;
-
 
         $scope.loadLanguages = function() {
             Language.query(function(result) {
@@ -30,11 +29,10 @@ angular.module('dictionaryApp')
         $scope.loadLanguages();
         $scope.loadTags();
 
-        $scope.loadWords = function() {
+        $scope.submit = function() {
 
             var tagId = $scope.tag == null ? null : $scope.tag.id;
 
-            console.log('$scope.selected_num_words: ' + $scope.selected_num_words);
             MultipleChoiceQuiz.query({fromLanguageId: $scope.from_language.id, 
                 toLanguageId: $scope.to_language.id, 
                 tagId: tagId, 
@@ -45,6 +43,14 @@ angular.module('dictionaryApp')
                 console.log($scope.words);
                 $scope.total_num_words = $scope.words.length;
                 $scope.loaded = true;
+                
+                if ($scope.total_num_words > 0) {
+                    MultipleChoiceQuizQuestionService.setWords(result.questions);    
+                    $state.go('multiple-choice-quiz.questions');
+                } else {
+
+                }
+                
             }, function(response) {
                 alert('error');
                 if(response.status === 404) {
@@ -53,10 +59,6 @@ angular.module('dictionaryApp')
                     console.log('no words found');
                 }
             });
-        }
-
-        $scope.submit = function() {
-            alert('TODO');
         }
 
         $scope.switchLanguages = function() {
@@ -77,20 +79,6 @@ angular.module('dictionaryApp')
             $scope.loaded = false;
             $scope.show = false;
             $scope.translations = null;
-        }
-
-        $scope.isLastWord = function() {
-            if ($scope.current_word_index < $scope.total_num_words - 1) {
-                return false;
-            }
-            return true;
-        }
-
-        $scope.nextWord = function() {
-            if ($scope.isLastWord()) {
-                return;
-            }
-            $scope.current_word_index++;
         }
 
         function getRandomNumber(min, max) {

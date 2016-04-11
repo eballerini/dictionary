@@ -30,6 +30,17 @@ angular.module('dictionaryApp')
             return true;
         }
 
+        $scope.isFirstWord = function() {
+            return $scope.current_word_index == 0;
+        }
+
+        $scope.previousWord = function() {
+            if ($scope.isFirstWord()) {
+                return;
+            }
+            $scope.current_word_index--;
+        }
+
         $scope.nextWord = function() {
             if ($scope.isLastWord()) {
                 return;

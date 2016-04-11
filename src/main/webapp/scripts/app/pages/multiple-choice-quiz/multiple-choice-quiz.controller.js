@@ -1,22 +1,21 @@
 'use strict';
 
 angular.module('dictionaryApp')
-    .controller('MultipleChoiceQuizController', function ($scope, $state, $modal, Language, WordSearch, TranslationSearch, Tag, MultipleChoiceQuiz, MultipleChoiceQuizQuestionService) {
+    .controller('MultipleChoiceQuizController', function ($scope, $state, $modal, Language, Tag, MultipleChoiceQuiz, MultipleChoiceQuizQuestionService) {
 
-      
+        $scope.formData = {};
         $scope.languages = [];
         $scope.tags = [];
-        $scope.selected_num_words = 2;
         $scope.num_words = [2, 5, 10, 20];
         $scope.words = [];
-        $scope.current_word_index = 0;
+        $scope.formData.selected_num_words = 5;
         $scope.total_num_words = 0;
 
         $scope.loadLanguages = function() {
             Language.query(function(result) {
                $scope.languages = result;
-               $scope.from_language = $scope.languages[0];
-               $scope.to_language = $scope.languages[1];
+               $scope.formData.from_language = $scope.languages[0];
+               $scope.formData.to_language = $scope.languages[1];
             });
         };
 
@@ -31,16 +30,15 @@ angular.module('dictionaryApp')
 
         $scope.submit = function() {
 
-            var tagId = $scope.tag == null ? null : $scope.tag.id;
+            var tagId = $scope.formData.tag == null ? null : $scope.formData.tag.id;
 
-            MultipleChoiceQuiz.query({fromLanguageId: $scope.from_language.id, 
-                toLanguageId: $scope.to_language.id, 
+            MultipleChoiceQuiz.query({fromLanguageId: $scope.formData.from_language.id, 
+                toLanguageId: $scope.formData.to_language.id, 
                 tagId: tagId, 
-                selectedNumWords: $scope.selected_num_words}, function(result) {
+                selectedNumWords: $scope.formData.selected_num_words}, function(result) {
 
                 console.log('loaded');
                 $scope.words = result.questions;
-                console.log($scope.words);
                 $scope.total_num_words = $scope.words.length;
                 $scope.loaded = true;
                 
@@ -62,16 +60,16 @@ angular.module('dictionaryApp')
         }
 
         $scope.switchLanguages = function() {
-            var tmp_language = $scope.from_language;
-            $scope.from_language = $scope.to_language;
-            $scope.to_language = tmp_language;
+            var tmp_language = $scope.formData.from_language;
+            $scope.formData.from_language = $scope.formData.to_language;
+            $scope.formData.to_language = tmp_language;
             $scope.reset();
         }
 
         $scope.pickRandomTag = function() {
             var numTags = $scope.tags.length;
             var tagNum = getRandomNumber(0, numTags - 1);
-            $scope.tag = $scope.tags[tagNum];
+            $scope.formData.tag = $scope.tags[tagNum];
             $scope.reset();
         }
 

@@ -10,7 +10,7 @@
 
                     <div>
                         Select tag: 
-                        <select id="tag" name="tag" ng-model="tag" ng-options="tag as tag.name for tag in tags | orderBy:'name' track by tag.id" ng-change="reset()">
+                        <select id="tag" name="tag" ng-model="formData.tag" ng-options="tag as tag.name for tag in tags | orderBy:'name' track by tag.id" ng-change="reset()">
                             <option value="">any</option>
                         </select>
                         <span ng-if="tags.length > 0">
@@ -21,12 +21,12 @@
                     </div>
 
                     <span>Select languages: from </span>
-                    <select  id="from_language" name="from_language" ng-model="from_language" ng-options="language as language.language for language in languages track by language.id">
+                    <select  id="from_language" name="from_language" ng-model="formData.from_language" ng-options="language as language.language for language in languages track by language.id">
                     </select>
 
                     to
 
-                    <select  id="to_language" name="to_language" ng-model="to_language" ng-options="language as language.language for language in languages track by language.id">
+                    <select  id="to_language" name="to_language" ng-model="formData.to_language" ng-options="language as language.language for language in languages track by language.id">
                     </select>
 
                     </span>&nbsp;<span>
@@ -37,7 +37,7 @@
 
                     <div>
                         Number of words:
-                        <select id="num_words" name="num_words" ng-model="selected_num_words" ng-options="n for n in num_words">
+                        <select id="num_words" name="num_words" ng-model="formData.selected_num_words" ng-options="n for n in num_words">
                         </select>
                     </div>
 

@@ -20,7 +20,8 @@ angular.module('dictionaryApp')
         getWords();
 
         $scope.submit = function() {
-            alert('TODO');
+            MultipleChoiceQuizQuestionService.setWords($scope.words);
+            MultipleChoiceQuizQuestionService.submit();
         }
 
         $scope.isLastWord = function() {

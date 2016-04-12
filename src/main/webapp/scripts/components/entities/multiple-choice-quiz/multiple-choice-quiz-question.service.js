@@ -1,7 +1,7 @@
 // 'use strict';
 
 angular.module('dictionaryApp')
-    .service('MultipleChoiceQuizQuestionService', function () {
+    .service('MultipleChoiceQuizQuestionService', function ($resource) {
         var words = [];
 
         function setWords(newWords) {
@@ -12,8 +12,19 @@ angular.module('dictionaryApp')
         	return words;
         }
 
+        function submit() {
+        	console.log('submitting quiz');
+        	var Quiz = $resource('api/quiz'); 
+        	var myQuiz = new Quiz();
+
+        	myQuiz.questions = words;
+        	myQuiz.$save();
+        	
+        }
+
 		return {
 			setWords: setWords,
-			getWords: getWords
+			getWords: getWords,
+			submit: submit
 		}
     });

@@ -10,6 +10,9 @@
                     <span>Could not find any words in {{from_language.language}}</span>
                 </div>
 
+                <div ng-if="errorSubmitting" class="alert alert-danger">
+                    <span>An error occured while submitting your quiz</span>
+                </div>
 
                 <div id="question" ng-if="loaded">
                     <div>
@@ -41,6 +44,10 @@
 
                 </div>
                    
+            </div>
+
+            <div id="summary" ng-if="received_answers">
+                Received answers
             </div>
 
         </form>

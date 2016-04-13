@@ -57,6 +57,8 @@ public class MultipleChoiceQuizResource {
 
         log.debug("quiz: {}", quiz);
         
+        multipleChoiceQuizService.validateAndSetCorrectAnswer(quiz);
+
         return new ResponseEntity<>(quiz, HttpStatus.OK);
     }
     

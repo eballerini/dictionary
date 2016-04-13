@@ -17,7 +17,7 @@ import org.dictionary.api.WordAPI;
 @Named
 public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizService {
 
-    private static final int DEFAULT_NUM_WORDS = 20;
+    private static final int DEFAULT_NUM_WORDS = 2;
     public static final int NUM_CHOICES = 5;
 
     @Inject
@@ -31,6 +31,8 @@ public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizServi
             Optional<Integer> selectedNumWords) {
 
         int numWords = selectedNumWords.orElse(DEFAULT_NUM_WORDS);
+
+        // http://localhost:3000/api/quiz/languages/1/to/2?selectedNumWords=3
 
         MultipleChoiceQuizAPI quiz = new MultipleChoiceQuizAPI();
         List<MultipleChoiceQuestionAPI> questions = new ArrayList<MultipleChoiceQuestionAPI>();
@@ -69,6 +71,15 @@ public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizServi
         quiz.setQuestions(questions);
 
         return quiz;
+    }
+
+    @Override
+    public void validateAndSetCorrectAnswer(MultipleChoiceQuizAPI quiz) {
+        for (MultipleChoiceQuestionAPI question: quiz.getQuestions()) {
+            // TODO fix this: for now, just set the correct answer using some
+            // answer
+            question.setCorrectAnswerWordId(question.getAnswers().iterator().next().getId());
+        }
     }
 
     private WordAPI getWordFromTranslations(List<TranslationAPI> translations, WordAPI word) {

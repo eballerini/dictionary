@@ -18,8 +18,7 @@ angular.module('dictionaryApp')
         	var myQuiz = new Quiz();
 
         	myQuiz.questions = words;
-        	myQuiz.$save();
-        	
+        	return myQuiz.$save();
         }
 
 		return {

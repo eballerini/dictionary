@@ -21,7 +21,15 @@ angular.module('dictionaryApp')
 
         $scope.submit = function() {
             MultipleChoiceQuizQuestionService.setWords($scope.words);
-            MultipleChoiceQuizQuestionService.submit();
+            MultipleChoiceQuizQuestionService.submit().then(function(result) {
+                $scope.received_answers = true;
+                $scope.loaded = false;
+            }, function(error) {
+                $scope.received_answers = false;
+                $scope.loaded = false;
+                $scope.errorLoading = false;
+                $scope.errorSubmitting = true;
+            });
         }
 
         $scope.isLastWord = function() {

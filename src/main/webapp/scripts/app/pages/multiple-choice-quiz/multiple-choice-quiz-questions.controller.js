@@ -6,6 +6,7 @@ angular.module('dictionaryApp')
         $scope.words = [];
         $scope.current_word_index = 0;
         $scope.total_num_words = 0;
+        $scope.score = 0;
 
         function getWords() {
             $scope.words = MultipleChoiceQuizQuestionService.getWords();
@@ -24,6 +25,8 @@ angular.module('dictionaryApp')
             MultipleChoiceQuizQuestionService.submit().then(function(result) {
                 $scope.received_answers = true;
                 $scope.loaded = false;
+                $scope.words = result.questions;
+                calculateScore();
             }, function(error) {
                 $scope.received_answers = false;
                 $scope.loaded = false;
@@ -55,6 +58,16 @@ angular.module('dictionaryApp')
                 return;
             }
             $scope.current_word_index++;
+        }
+
+        function calculateScore() {
+            var num_correct_answers = 0;
+            $scope.words.forEach(function(word) {
+                if (word.answerWordId == word.correctAnswerWordId) {
+                    num_correct_answers++;
+                }
+            });
+            $scope.score = num_correct_answers / $scope.total_num_words * 100;
         }
 
     });

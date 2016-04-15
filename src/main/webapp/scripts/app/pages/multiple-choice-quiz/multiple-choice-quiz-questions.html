@@ -47,7 +47,7 @@
             </div>
 
             <div id="summary" ng-if="received_answers">
-                Your score: {{score}} %
+                <h3>Your score: {{score}} %</h3>
                 <div ng-repeat="word in words track by $index">
                     Word {{$index + 1}}. <label>{{word.word.word}}</label>
                     <div ng-repeat="answer in word.answers">

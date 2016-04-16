@@ -205,3 +205,7 @@ ul#strengthBar {
     margin-bottom: 5px;
     padding: 10px;
 }
+
+.correct-answer {
+	font-weight: bold;
+}

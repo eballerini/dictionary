@@ -48,16 +48,16 @@
 
             <div id="summary" ng-if="received_answers">
                 <h3>Your score: {{score}} %</h3>
-                <div ng-repeat="word in words track by $index">
+                <div ng-repeat="word in words track by $index" class="answer">
                     Word {{$index + 1}}. <label>{{word.word.word}}</label>
                     <div ng-repeat="answer in word.answers">
-                        <p ng-if="answer.id == word.correctAnswerWordId && word.answerWordId != word.correctAnswerWordId" class="alert alert-success">{{answer.word}} This is the correct answer</p>
-                        <p ng-if="answer.id == word.correctAnswerWordId && word.answerWordId == word.correctAnswerWordId" class="alert alert-success">{{answer.word}} Your answer is correct
-                        </p>
-                        <p ng-if="answer.id == word.answerWordId && word.answerWordId != word.correctAnswerWordId" class="alert alert-danger">{{answer.word}} Your answer is wrong
-                        </p>
-                        <p ng-if="answer.id != word.correctAnswerWordId && answer.id != word.answerWordId">{{answer.word}}
-                        </p>
+                        <div ng-if="answer.id == word.correctAnswerWordId && word.answerWordId != word.correctAnswerWordId" class="bg-success">{{answer.word}} This is the correct answer</div>
+                        <div ng-if="answer.id == word.correctAnswerWordId && word.answerWordId == word.correctAnswerWordId" class="bg-success">{{answer.word}} Your answer is correct
+                        </div>
+                        <div ng-if="answer.id == word.answerWordId && word.answerWordId != word.correctAnswerWordId" class="bg-danger">{{answer.word}} Your answer is wrong
+                        </div>
+                        <div ng-if="answer.id != word.correctAnswerWordId && answer.id != word.answerWordId">{{answer.word}}
+                        </div>
 
                     </div>                    
                 </div>

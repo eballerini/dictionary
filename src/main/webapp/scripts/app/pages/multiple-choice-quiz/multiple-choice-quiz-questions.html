@@ -48,7 +48,7 @@
 
             <div id="summary" ng-if="received_answers">
                 <h3>Your score: {{score}} %</h3>
-                <div ng-repeat="word in words track by $index" class="answer">
+                <div ng-repeat="word in words track by $index" class="answer-container">
                     Word {{$index + 1}}. <label>{{word.word.word}}</label>
                     <div ng-repeat="answer in word.answers">
                         <div ng-if="answer.id == word.correctAnswerWordId && word.answerWordId != word.correctAnswerWordId" class="bg-success">{{answer.word}} This is the correct answer</div>

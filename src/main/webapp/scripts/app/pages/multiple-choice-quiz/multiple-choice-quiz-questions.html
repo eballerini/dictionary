@@ -27,7 +27,7 @@
                         </div>
 
                     </div>
-                    <div>
+                    <div class="buttons">
                         <a href="#/multiple-choice-quiz-questions" type="button" class="btn btn-primary btn-xs" ng-click="previousWord()" ng-if="!isFirstWord()">
                             <span>Previous word</span>
                         </a>
@@ -46,20 +46,21 @@
                    
             </div>
 
-            <div id="summary" ng-if="received_answers">
+            <div id="summary" ng-if="received_answers" class="container-fluid">
                 <h3>Your score: {{score}} %</h3>
-                <div ng-repeat="word in words track by $index" class="answer-container">
-                    Word {{$index + 1}}. <label>{{word.word.word}}</label>
-                    <div ng-repeat="answer in word.answers">
-                        <div ng-if="answer.id == word.correctAnswerWordId && word.answerWordId != word.correctAnswerWordId" class="bg-success"><span class="correct-answer">{{answer.word}}</span> This is the correct answer</div>
-                        <div ng-if="answer.id == word.correctAnswerWordId && word.answerWordId == word.correctAnswerWordId" class="bg-success"><span class="correct-answer">{{answer.word}}</span> Your answer is correct
-                        </div>
-                        <div ng-if="answer.id == word.answerWordId && word.answerWordId != word.correctAnswerWordId" class="bg-danger">{{answer.word}} Your answer is wrong
-                        </div>
-                        <div ng-if="answer.id != word.correctAnswerWordId && answer.id != word.answerWordId">{{answer.word}}
-                        </div>
-
-                    </div>                    
+                <div ng-repeat="word in words track by $index" class="row">
+                    <div class="answer-container col-md-6">
+                        Word {{$index + 1}}. <label>{{word.word.word}}</label>
+                        <div ng-repeat="answer in word.answers">
+                            <div ng-if="answer.id == word.correctAnswerWordId && word.answerWordId != word.correctAnswerWordId" class="bg-success"><span class="correct-answer">{{answer.word}}</span> This is the correct answer</div>
+                            <div ng-if="answer.id == word.correctAnswerWordId && word.answerWordId == word.correctAnswerWordId" class="bg-success"><span class="correct-answer">{{answer.word}}</span> Your answer is correct
+                            </div>
+                            <div ng-if="answer.id == word.answerWordId && word.answerWordId != word.correctAnswerWordId" class="bg-danger">{{answer.word}} Your answer is wrong
+                            </div>
+                            <div ng-if="answer.id != word.correctAnswerWordId && answer.id != word.answerWordId">{{answer.word}}
+                            </div>
+                        </div>                    
+                    </div>
                 </div>
             </div>
 

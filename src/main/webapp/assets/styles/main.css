@@ -209,3 +209,8 @@ ul#strengthBar {
 .correct-answer {
 	font-weight: bold;
 }
+
+.buttons {
+	margin-top: 10px;
+	margin-bottom: 10px;
+}

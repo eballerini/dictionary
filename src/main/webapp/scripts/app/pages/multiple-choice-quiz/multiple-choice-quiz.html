@@ -13,37 +13,41 @@
                         <select id="tag" name="tag" ng-model="formData.tag" ng-options="tag as tag.name for tag in tags | orderBy:'name' track by tag.id" ng-change="reset()">
                             <option value="">any</option>
                         </select>
-                        <span ng-if="tags.length > 0">
-                        <a href="#/multiple-choice-quiz" type="button" class="btn btn-primary btn-xs" ng-click="pickRandomTag()">
-                            <span>Pick random tag</span>
-                        </a>
-                    </span>
                     </div>
+                                        
+                    <div>
+                        <span>Select languages: from </span>
+                        <select  id="from_language" name="from_language" ng-model="formData.from_language" ng-options="language as language.language for language in languages track by language.id">
+                        </select>
 
-                    <span>Select languages: from </span>
-                    <select  id="from_language" name="from_language" ng-model="formData.from_language" ng-options="language as language.language for language in languages track by language.id">
-                    </select>
+                        to
 
-                    to
-
-                    <select  id="to_language" name="to_language" ng-model="formData.to_language" ng-options="language as language.language for language in languages track by language.id">
-                    </select>
-
-                    </span>&nbsp;<span>
-
-                    <a href="#/multiple-choice-quiz" type="button" class="btn btn-primary btn-xs" ng-click="switchLanguages()">
-                        <span>Switch languages</span>
-                    </a>                
+                        <select  id="to_language" name="to_language" ng-model="formData.to_language" ng-options="language as language.language for language in languages track by language.id">
+                        </select>
+                    </div>
 
                     <div>
                         Number of words:
                         <select id="num_words" name="num_words" ng-model="formData.selected_num_words" ng-options="n for n in num_words">
                         </select>
                     </div>
+                    
+                    <div class="buttons">
+                        <span ng-if="tags.length > 0">
+                            <a href="#/multiple-choice-quiz" type="button" class="btn btn-primary btn-xs" ng-click="pickRandomTag()">
+                                <span>Pick random tag</span>
+                            </a>
+                        </span>
+                        <a href="#/multiple-choice-quiz" type="button" class="btn btn-primary btn-xs" ng-click="switchLanguages()">
+                            <span>Switch languages</span>
+                        </a>             
+                    </div>
 
-                    <button type="submit" class="btn btn-primary btn-xs">
-                        <span>Start</span>
-                    </button>
+                    <div class="buttons">
+                        <button type="submit" class="btn btn-primary btn-xs">
+                            <span>Start</span>
+                        </button>
+                    </div>
                 </div>
 
 
@@ -52,6 +56,7 @@
                 </div>
                    
             </div>
+
 
         </form>
 

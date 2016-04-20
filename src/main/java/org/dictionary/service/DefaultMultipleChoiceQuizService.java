@@ -13,9 +13,14 @@ import org.dictionary.api.MultipleChoiceQuestionAPI;
 import org.dictionary.api.MultipleChoiceQuizAPI;
 import org.dictionary.api.TranslationAPI;
 import org.dictionary.api.WordAPI;
+import org.dictionary.repository.search.TranslationSearchRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Named
 public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizService {
+
+    private final Logger log = LoggerFactory.getLogger(DefaultMultipleChoiceQuizService.class);
 
     private static final int DEFAULT_NUM_WORDS = 2;
     public static final int NUM_CHOICES = 5;
@@ -25,6 +30,10 @@ public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizServi
 
     @Inject
     private TranslationService translationService;
+
+    // TODO maybe move this into TranslationService
+    @Inject
+    private TranslationSearchRepository translationSearchRepository;
 
     @Override
     public MultipleChoiceQuizAPI getMultipleChoiceQuizAPI(long fromLanguageId, long toLanguageId, Optional<Long> tagId,
@@ -76,10 +85,26 @@ public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizServi
     @Override
     public void validateAndSetCorrectAnswer(MultipleChoiceQuizAPI quiz) {
         for (MultipleChoiceQuestionAPI question: quiz.getQuestions()) {
-            // TODO fix this: for now, just set the correct answer using some
-            // answer
-            question.setCorrectAnswerWordId(question.getAnswers().iterator().next().getId());
+            log.debug("for the word {}", question.getWord());
+            for (WordAPI possibleAnswer: question.getAnswers()) {
+                int translationsCount = countTranslations(question.getWord(), possibleAnswer);
+                if (translationsCount > 0) {
+                    question.setCorrectAnswerWordId(possibleAnswer.getId());
+                    break;
+                }
+            }
         }
+    }
+
+    private int countTranslations(WordAPI fromWord, WordAPI toWord) {
+        long fromWordId = fromWord.getId();
+        long toWordId = toWord.getId();
+        int translationsCount = translationSearchRepository.countByFromWordIdAndToWordId(fromWordId, toWordId);
+        if (translationsCount == 0) {
+            translationsCount = translationSearchRepository.countByFromWordIdAndToWordId(toWordId, fromWordId);
+        }
+        log.debug("translations count between word {} and word {}: {}", fromWordId, toWordId, translationsCount);
+        return translationsCount;
     }
 
     private WordAPI getWordFromTranslations(List<TranslationAPI> translations, WordAPI word) {

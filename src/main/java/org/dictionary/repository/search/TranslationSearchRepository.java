@@ -11,4 +11,6 @@ public interface TranslationSearchRepository extends ElasticsearchRepository<Tra
     int countByFromWordLanguageId(long languageId);
 
     int countByToWordLanguageId(long languageId);
+
+    int countByFromWordIdAndToWordId(long fromWordId, long toWordId);
 }

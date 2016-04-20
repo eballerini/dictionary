@@ -9,5 +9,5 @@ public interface MultipleChoiceQuizService {
     MultipleChoiceQuizAPI getMultipleChoiceQuizAPI(long fromLanguageId, long toLanguageId, Optional<Long> tagId,
             Optional<Integer> selectedNumWords);
 
-    void validateAndSetCorrectAnswer(MultipleChoiceQuizAPI quiz);
+    void setCorrectAnswers(MultipleChoiceQuizAPI quiz);
 }

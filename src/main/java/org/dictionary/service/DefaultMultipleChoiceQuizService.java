@@ -83,7 +83,7 @@ public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizServi
     }
 
     @Override
-    public void validateAndSetCorrectAnswer(MultipleChoiceQuizAPI quiz) {
+    public void setCorrectAnswers(MultipleChoiceQuizAPI quiz) {
         for (MultipleChoiceQuestionAPI question: quiz.getQuestions()) {
             log.debug("for the word {}", question.getWord());
             for (WordAPI possibleAnswer: question.getAnswers()) {

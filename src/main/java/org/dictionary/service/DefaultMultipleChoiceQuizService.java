@@ -14,6 +14,7 @@ import org.dictionary.api.MultipleChoiceQuizAPI;
 import org.dictionary.api.TranslationAPI;
 import org.dictionary.api.WordAPI;
 import org.dictionary.repository.search.TranslationSearchRepository;
+import org.dictionary.web.rest.errors.CustomParameterizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +36,9 @@ public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizServi
     @Inject
     private TranslationSearchRepository translationSearchRepository;
 
+    @Inject
+    private WordStrategyFactory wordStrategyFactory;
+
     @Override
     public MultipleChoiceQuizAPI getMultipleChoiceQuizAPI(long fromLanguageId, long toLanguageId, Optional<Long> tagId,
             Optional<Integer> selectedNumWords) {
@@ -45,6 +49,8 @@ public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizServi
 
         MultipleChoiceQuizAPI quiz = new MultipleChoiceQuizAPI();
         List<MultipleChoiceQuestionAPI> questions = new ArrayList<MultipleChoiceQuestionAPI>();
+
+        checkTotalNumWords(fromLanguageId, tagId, numWords);
 
         for (int i = 0; i < numWords; i++) {
             MultipleChoiceQuestionAPI question = new MultipleChoiceQuestionAPI();
@@ -118,5 +124,16 @@ public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizServi
             }
         }
         return null;
+    }
+
+    private void checkTotalNumWords(long fromLanguageId, Optional<Long> tagId, int numWords) {
+        WordStrategy wordStrategy = wordStrategyFactory.createWordStrategy(fromLanguageId, tagId);
+        int totalNumWords = wordStrategy.countWords();
+        log.debug("from language id {} with tag {}, there are {} words", fromLanguageId, tagId, totalNumWords);
+    
+        if (totalNumWords < numWords) {
+            throw new CustomParameterizedException(
+                    "Could not create quiz because there aren't enough words with this tags");
+        }
     }
 }

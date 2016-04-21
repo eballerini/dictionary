@@ -8,7 +8,7 @@ angular.module('dictionaryApp')
         $scope.tags = [];
         $scope.num_words = [2, 5, 10, 20];
         $scope.words = [];
-        $scope.formData.selected_num_words = 5;
+        $scope.formData.selected_num_words = 2;
         $scope.total_num_words = 0;
 
         $scope.loadLanguages = function() {
@@ -50,11 +50,15 @@ angular.module('dictionaryApp')
                 }
                 
             }, function(response) {
-                alert('error');
                 if(response.status === 404) {
                     $scope.loaded = false;
                     $scope.errorLoading = true;
                     console.log('no words found');
+                    $scope.error_message = "Could not create quiz";
+                } else if(response.status === 400) {
+                    $scope.loaded = false;
+                    $scope.errorLoading = true;
+                    $scope.error_message = response.data.message;
                 }
             });
         }

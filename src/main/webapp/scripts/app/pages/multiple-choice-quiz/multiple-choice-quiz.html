@@ -31,7 +31,7 @@
                         <select id="num_words" name="num_words" ng-model="formData.selected_num_words" ng-options="n for n in num_words">
                         </select>
                     </div>
-                    
+
                     <div class="buttons">
                         <span ng-if="tags.length > 0">
                             <a href="#/multiple-choice-quiz" type="button" class="btn btn-primary btn-xs" ng-click="pickRandomTag()">
@@ -52,7 +52,7 @@
 
 
                 <div ng-if="errorLoading" class="alert alert-danger">
-                    <span>Could not find any words in {{from_language.language}}</span>
+                    <span>{{error_message}}</span>
                 </div>
                    
             </div>

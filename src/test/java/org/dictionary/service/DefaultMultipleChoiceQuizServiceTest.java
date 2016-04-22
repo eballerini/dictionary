@@ -8,12 +8,14 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.dictionary.api.MultipleChoiceQuestionAPI;
 import org.dictionary.api.MultipleChoiceQuizAPI;
 import org.dictionary.api.WordAPI;
 import org.dictionary.repository.search.TranslationSearchRepository;
+import org.dictionary.web.rest.errors.CustomParameterizedException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,8 +26,11 @@ public class DefaultMultipleChoiceQuizServiceTest {
     private WordService wordService = mock(WordService.class);
     private TranslationService translationService = mock(TranslationService.class);
     private TranslationSearchRepository translationSearchRepository = mock(TranslationSearchRepository.class);
+    private WordStrategyFactory wordStrategyFactory = mock(WordStrategyFactory.class);
 
     private MultipleChoiceQuizService service;
+    private long fromLanguageId = 1;
+    private long toLanguageId = 2;
 
     @Before
     public void init() {
@@ -33,6 +38,7 @@ public class DefaultMultipleChoiceQuizServiceTest {
         ReflectionTestUtils.setField(service, "wordService", wordService);
         ReflectionTestUtils.setField(service, "translationService", translationService);
         ReflectionTestUtils.setField(service, "translationSearchRepository", translationSearchRepository);
+        ReflectionTestUtils.setField(service, "wordStrategyFactory", wordStrategyFactory);
     }
 
     @Test
@@ -54,6 +60,23 @@ public class DefaultMultipleChoiceQuizServiceTest {
 
         Assert.assertEquals(quiz.getQuestions().get(0).getCorrectAnswerWordId().longValue(), 12L);
         Assert.assertEquals(quiz.getQuestions().get(1).getCorrectAnswerWordId().longValue(), 21L);
+    }
+
+    @Test
+    public void testGetMultipleChoiceQuizAPINoEnoughWords() {
+        Optional<Long> tagId = Optional.empty();
+        Optional<Integer> selectedNumWords = Optional.of(2);
+
+        WordStrategy wordStrategy = mock(WordStrategy.class);
+        when(wordStrategy.countWords()).thenReturn(1);
+        when(wordStrategyFactory.createWordStrategy(fromLanguageId, tagId)).thenReturn(wordStrategy);
+        
+        try {
+            service.getMultipleChoiceQuizAPI(fromLanguageId, toLanguageId, tagId, selectedNumWords);
+            Assert.fail("service should have thrown an exception");
+        } catch (CustomParameterizedException e) {
+            // normal
+        }
     }
 
     private MultipleChoiceQuestionAPI createQuestion(long wordId, long... answerIds) {

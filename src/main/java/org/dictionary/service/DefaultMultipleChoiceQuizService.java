@@ -39,18 +39,18 @@ public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizServi
     @Inject
     private WordStrategyFactory wordStrategyFactory;
 
+    // TODO remove
+    // http://localhost:3000/api/quiz/languages/1/to/2?selectedNumWords=3
     @Override
     public MultipleChoiceQuizAPI getMultipleChoiceQuizAPI(long fromLanguageId, long toLanguageId, Optional<Long> tagId,
             Optional<Integer> selectedNumWords) {
 
         int numWords = selectedNumWords.orElse(DEFAULT_NUM_WORDS);
 
-        // http://localhost:3000/api/quiz/languages/1/to/2?selectedNumWords=3
+        checkTotalNumWords(fromLanguageId, tagId, numWords);
 
         MultipleChoiceQuizAPI quiz = new MultipleChoiceQuizAPI();
         List<MultipleChoiceQuestionAPI> questions = new ArrayList<MultipleChoiceQuestionAPI>();
-
-        checkTotalNumWords(fromLanguageId, tagId, numWords);
 
         for (int i = 0; i < numWords; i++) {
             MultipleChoiceQuestionAPI question = new MultipleChoiceQuestionAPI();
@@ -133,7 +133,7 @@ public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizServi
     
         if (totalNumWords < numWords) {
             throw new CustomParameterizedException(
-                    "Could not create quiz because there aren't enough words with this tags");
+                    "Could not create quiz because there aren't enough words in this language with this tag");
         }
     }
 }

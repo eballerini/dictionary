@@ -51,41 +51,47 @@ public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizServi
 
         MultipleChoiceQuizAPI quiz = new MultipleChoiceQuizAPI();
         List<MultipleChoiceQuestionAPI> questions = new ArrayList<MultipleChoiceQuestionAPI>();
+        Set<Long> wordIds = new HashSet<Long>();
 
         for (int i = 0; i < numWords; i++) {
             MultipleChoiceQuestionAPI question = new MultipleChoiceQuestionAPI();
-            Optional<WordAPI> word = wordService.findRandomWord(fromLanguageId, tagId);
-            // TODO make sure that there is actually a word
-            if (word.isPresent()) {
-                question.setWord(word.get());
-                Set<WordAPI> answers = new HashSet<WordAPI>();
+            WordAPI word = findRandomWord(fromLanguageId, tagId, wordIds);
+            wordIds.add(word.getId());
+            question.setWord(word);
+            Set<WordAPI> answers = new HashSet<WordAPI>();
 
-                // TODO fix TranslationTranslator.toAPI(toWordAPI, translation)
-                List<TranslationAPI> translations = translationService.findTranslations(word.get().getId(),
-                        toLanguageId);
-                answers.add(getWordFromTranslations(translations, word.get()));
-                // TODO make sure there are translations
-                // TODO make sure that the other words are not potential
-                // translations
-                List<WordAPI> otherWords = new ArrayList<WordAPI>();
-                for (int j = 0; j < NUM_CHOICES - 1; j++) {
-                    // TODO make sure all the other words are unique
-                    Optional<WordAPI> otherWord = wordService.findRandomWord(toLanguageId, Optional.empty());
-                    if (otherWord.isPresent()) {
-                        otherWords.add(otherWord.get());
-                    } else {
-                        // TODO drop this current word
-                    }
+            // TODO fix TranslationTranslator.toAPI(toWordAPI, translation)
+            List<TranslationAPI> translations = translationService.findTranslations(word.getId(), toLanguageId);
+            answers.add(getWordFromTranslations(translations, word));
+            // TODO make sure there are translations
+            // TODO make sure that the other words are not potential
+            // translations
+            List<WordAPI> otherWords = new ArrayList<WordAPI>();
+            for (int j = 0; j < NUM_CHOICES - 1; j++) {
+                // TODO make sure all the other words are unique
+                Optional<WordAPI> otherWord = wordService.findRandomWord(toLanguageId, Optional.empty());
+                if (otherWord.isPresent()) {
+                    otherWords.add(otherWord.get());
+                } else {
+                    // TODO drop this current word
                 }
-                answers.addAll(otherWords);
-                question.setAnswers(answers);
-
             }
+            answers.addAll(otherWords);
+            question.setAnswers(answers);
+
             questions.add(question);
         }
         quiz.setQuestions(questions);
 
         return quiz;
+    }
+
+    private WordAPI findRandomWord(long fromLanguageId, Optional<Long> tagId, Set<Long> wordIds) {
+        Optional<WordAPI> word = wordService.findRandomWord(fromLanguageId, tagId, wordIds);
+        if (!word.isPresent()) {
+            new CustomParameterizedException("Could not create quiz");
+        }
+        return word.get();
     }
 
     @Override
@@ -117,7 +123,7 @@ public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizServi
         // TODO pick a random translation
         for (TranslationAPI translation: translations) {
             // should be able to just use equals between words
-            if (word.getWord().equals(translation.getFromWord().getWord())) {
+            if (word.equals(translation.getFromWord())) {
                 return translation.getToWord();
             } else {
                 return translation.getFromWord();

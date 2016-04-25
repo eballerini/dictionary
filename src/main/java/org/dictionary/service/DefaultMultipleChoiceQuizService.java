@@ -55,15 +55,21 @@ public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizServi
 
         for (int i = 0; i < numWords; i++) {
             MultipleChoiceQuestionAPI question = new MultipleChoiceQuestionAPI();
-            WordAPI word = findRandomWord(fromLanguageId, tagId, wordIds);
-            wordIds.add(word.getId());
+            boolean foundWordWithTranslations = false;
+            WordAPI word;
+            List<TranslationAPI> translations;
+            do {
+                word = findRandomWord(fromLanguageId, tagId, wordIds);
+                wordIds.add(word.getId());
+                translations = translationService.findTranslations(word.getId(), toLanguageId);
+                if (!translations.isEmpty()) {
+                    foundWordWithTranslations = true;
+                }
+            } while (!foundWordWithTranslations);
             question.setWord(word);
             Set<WordAPI> answers = new HashSet<WordAPI>();
-
-            // TODO fix TranslationTranslator.toAPI(toWordAPI, translation)
-            List<TranslationAPI> translations = translationService.findTranslations(word.getId(), toLanguageId);
             answers.add(getWordFromTranslations(translations, word));
-            // TODO make sure there are translations
+
             // TODO make sure that the other words are not potential
             // translations
             List<WordAPI> otherWords = new ArrayList<WordAPI>();

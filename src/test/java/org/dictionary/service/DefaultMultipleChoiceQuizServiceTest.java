@@ -66,7 +66,7 @@ public class DefaultMultipleChoiceQuizServiceTest {
     }
 
     @Test
-    public void testGetMultipleChoiceQuizAPINoEnoughWords() {
+    public void testGetQuizNoEnoughWords() {
         Optional<Long> tagId = Optional.empty();
         Optional<Integer> selectedNumWords = Optional.of(2);
 
@@ -75,7 +75,7 @@ public class DefaultMultipleChoiceQuizServiceTest {
         when(wordStrategyFactory.createWordStrategy(fromLanguageId, tagId)).thenReturn(wordStrategy);
         
         try {
-            service.getMultipleChoiceQuizAPI(fromLanguageId, toLanguageId, tagId, selectedNumWords);
+            service.getQuiz(fromLanguageId, toLanguageId, tagId, selectedNumWords);
             Assert.fail("service should have thrown an exception");
         } catch (CustomParameterizedException e) {
             // normal
@@ -83,7 +83,7 @@ public class DefaultMultipleChoiceQuizServiceTest {
     }
 
     @Test
-    public void testGetMultipleChoiceQuizAPIWordWithNoTranslations() {
+    public void testGetQuizWordWithNoTranslations() {
         WordStrategy wordStrategy = mock(WordStrategy.class);
         when(wordStrategy.countWords()).thenReturn(1);
         when(wordStrategyFactory.createWordStrategy(fromLanguageId, noTagId)).thenReturn(wordStrategy);
@@ -114,7 +114,7 @@ public class DefaultMultipleChoiceQuizServiceTest {
         translations.add(translation1);
         when(translationService.findTranslations(word2.getId(), toLanguageId)).thenReturn(translations);
 
-        MultipleChoiceQuizAPI quiz = service.getMultipleChoiceQuizAPI(fromLanguageId, toLanguageId, noTagId,
+        MultipleChoiceQuizAPI quiz = service.getQuiz(fromLanguageId, toLanguageId, noTagId,
                 Optional.of(1));
         Assert.assertNotNull(quiz);
         Assert.assertFalse(quiz.getQuestions().isEmpty());
@@ -125,16 +125,16 @@ public class DefaultMultipleChoiceQuizServiceTest {
         }
     }
 
-    public void testGetMultipleChoiceQuizAPIUniqueWords() {
-        // TODO
+    public void testGetQuizUniqueWords() {
+        Assert.fail("TODO");
     }
 
-    public void testGetMultipleChoiceQuizAPIOtherAnswersNotPotentialTranslations() {
-        // TODO
+    public void testGetQuizOtherAnswersNotPotentialTranslations() {
+        Assert.fail("TODO");
     }
 
-    public void testGetMultipleChoiceQuizAPIAllAnswersAreUnique() {
-        // TODO
+    public void testGetQuizAllAnswersAreUnique() {
+        Assert.fail("TODO");
     }
 
     public void testGetMultipleChoiceQuizAPI() {

@@ -42,7 +42,7 @@ public class MultipleChoiceQuizResource {
         log.debug("quiz from language {} to language {} tag {} with number of words {}", fromLanguageId, toLanguageId,
                 tagId, selectedNumWords);
         
-        MultipleChoiceQuizAPI quiz = multipleChoiceQuizService.getMultipleChoiceQuizAPI(fromLanguageId, toLanguageId,
+        MultipleChoiceQuizAPI quiz = multipleChoiceQuizService.getQuiz(fromLanguageId, toLanguageId,
                 Optional.ofNullable(tagId), Optional.ofNullable(selectedNumWords));
 
         return new ResponseEntity<>(quiz, HttpStatus.OK);

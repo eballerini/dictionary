@@ -47,7 +47,7 @@ public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizServi
     // TODO remove
     // http://localhost:3000/api/quiz/languages/1/to/2?selectedNumWords=3
     @Override
-    public MultipleChoiceQuizAPI getMultipleChoiceQuizAPI(long fromLanguageId, long toLanguageId, Optional<Long> tagId,
+    public MultipleChoiceQuizAPI getQuiz(long fromLanguageId, long toLanguageId, Optional<Long> tagId,
             Optional<Integer> selectedNumWords) {
 
         int numWords = selectedNumWords.orElse(DEFAULT_NUM_WORDS);

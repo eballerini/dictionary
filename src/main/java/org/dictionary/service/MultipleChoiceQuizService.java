@@ -6,7 +6,7 @@ import org.dictionary.api.MultipleChoiceQuizAPI;
 
 public interface MultipleChoiceQuizService {
 
-    MultipleChoiceQuizAPI getMultipleChoiceQuizAPI(long fromLanguageId, long toLanguageId, Optional<Long> tagId,
+    MultipleChoiceQuizAPI getQuiz(long fromLanguageId, long toLanguageId, Optional<Long> tagId,
             Optional<Integer> selectedNumWords);
 
     void setCorrectAnswers(MultipleChoiceQuizAPI quiz);

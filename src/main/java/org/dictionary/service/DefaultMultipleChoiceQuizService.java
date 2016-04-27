@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -68,7 +69,7 @@ public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizServi
             } while (!foundWordWithTranslations);
             question.setWord(word);
             Set<WordAPI> answers = new HashSet<WordAPI>();
-            answers.add(getWordFromTranslations(translations, word));
+            answers.add(getWordFromTranslations(translations, word, tagId));
 
             // TODO make sure that the other words are not potential
             // translations
@@ -92,14 +93,6 @@ public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizServi
         return quiz;
     }
 
-    private WordAPI findRandomWord(long fromLanguageId, Optional<Long> tagId, Set<Long> wordIds) {
-        Optional<WordAPI> word = wordService.findRandomWord(fromLanguageId, tagId, wordIds);
-        if (!word.isPresent()) {
-            new CustomParameterizedException("Could not create quiz");
-        }
-        return word.get();
-    }
-
     @Override
     public void setCorrectAnswers(MultipleChoiceQuizAPI quiz) {
         for (MultipleChoiceQuestionAPI question: quiz.getQuestions()) {
@@ -114,6 +107,14 @@ public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizServi
         }
     }
 
+    private WordAPI findRandomWord(long fromLanguageId, Optional<Long> tagId, Set<Long> wordIds) {
+        Optional<WordAPI> word = wordService.findRandomWord(fromLanguageId, tagId, wordIds);
+        if (!word.isPresent()) {
+            new CustomParameterizedException("Could not create quiz");
+        }
+        return word.get();
+    }
+
     private int countTranslations(WordAPI fromWord, WordAPI toWord) {
         long fromWordId = fromWord.getId();
         long toWordId = toWord.getId();
@@ -125,14 +126,19 @@ public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizServi
         return translationsCount;
     }
 
-    private WordAPI getWordFromTranslations(List<TranslationAPI> translations, WordAPI word) {
-        // TODO pick a random translation
-        for (TranslationAPI translation: translations) {
-            // should be able to just use equals between words
-            if (word.equals(translation.getFromWord())) {
-                return translation.getToWord();
+    private WordAPI getWordFromTranslations(List<TranslationAPI> translations, WordAPI word, Optional<Long> tagId) {
+        // TODO pick the translation with the appropriate tag or a random one if
+        // there is no tag
+        if (tagId.isPresent()) {
+            // TODO broken for now
+        } else {
+            Random random = new Random();
+            int numTranslations = translations.size();
+            TranslationAPI randomTranslation = translations.get(random.nextInt(numTranslations));
+            if (word.equals(randomTranslation.getFromWord())) {
+                return randomTranslation.getToWord();
             } else {
-                return translation.getFromWord();
+                return randomTranslation.getFromWord();
             }
         }
         return null;

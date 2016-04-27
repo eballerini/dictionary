@@ -11,4 +11,6 @@ public interface WordSearchRepository extends ElasticsearchRepository<Word, Long
     int countByLanguageId(long languageId);
 
     int countByLanguageIdAndTagsId(long languageId, long tagId);
+
+    int countByIdAndTagsId(long wordId, long tagId);
 }

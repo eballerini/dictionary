@@ -15,6 +15,7 @@ import org.dictionary.api.MultipleChoiceQuizAPI;
 import org.dictionary.api.TranslationAPI;
 import org.dictionary.api.WordAPI;
 import org.dictionary.repository.search.TranslationSearchRepository;
+import org.dictionary.repository.search.WordSearchRepository;
 import org.dictionary.web.rest.errors.CustomParameterizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,9 @@ public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizServi
 
     @Inject
     private WordService wordService;
+
+    @Inject
+    private WordSearchRepository wordSearchRepository;
 
     @Inject
     private TranslationService translationService;
@@ -127,21 +131,38 @@ public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizServi
     }
 
     private WordAPI getWordFromTranslations(List<TranslationAPI> translations, WordAPI word, Optional<Long> tagId) {
-        // TODO pick the translation with the appropriate tag or a random one if
-        // there is no tag
         if (tagId.isPresent()) {
-            // TODO broken for now
-        } else {
-            Random random = new Random();
-            int numTranslations = translations.size();
-            TranslationAPI randomTranslation = translations.get(random.nextInt(numTranslations));
-            if (word.equals(randomTranslation.getFromWord())) {
-                return randomTranslation.getToWord();
+            if (translations.size() == 1) {
+                TranslationAPI uniqueTranslation = translations.get(0);
+                return getOtherWord(word, uniqueTranslation);
             } else {
-                return randomTranslation.getFromWord();
+                for (TranslationAPI translation: translations) {
+                    WordAPI otherWord = getOtherWord(word, translation);
+                    int numWordsWithTag = wordSearchRepository.countByIdAndTagsId(otherWord.getId(), tagId.get());
+                    if (numWordsWithTag > 0) {
+                        return otherWord;
+                    }
+                }
             }
+        } else {
+            return pickRandomTranslationWord(translations, word);
         }
         return null;
+    }
+
+    private WordAPI pickRandomTranslationWord(List<TranslationAPI> translations, WordAPI word) {
+        Random random = new Random();
+        int numTranslations = translations.size();
+        TranslationAPI randomTranslation = translations.get(random.nextInt(numTranslations));
+        return getOtherWord(word, randomTranslation);
+    }
+
+    private WordAPI getOtherWord(WordAPI word, TranslationAPI uniqueTranslation) {
+        if (word.equals(uniqueTranslation.getFromWord())) {
+            return uniqueTranslation.getToWord();
+        } else {
+            return uniqueTranslation.getFromWord();
+        }
     }
 
     private void checkTotalNumWords(long fromLanguageId, Optional<Long> tagId, int numWords) {

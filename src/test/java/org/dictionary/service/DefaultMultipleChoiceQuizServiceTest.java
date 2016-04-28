@@ -65,7 +65,7 @@ public class DefaultMultipleChoiceQuizServiceTest {
         Assert.assertEquals(quiz.getQuestions().get(1).getCorrectAnswerWordId().longValue(), 21L);
     }
 
-    @Test
+    @Test(expected = CustomParameterizedException.class)
     public void testGetQuizNoEnoughWords() {
         Optional<Long> tagId = Optional.empty();
         Optional<Integer> selectedNumWords = Optional.of(2);
@@ -74,12 +74,7 @@ public class DefaultMultipleChoiceQuizServiceTest {
         when(wordStrategy.countWords()).thenReturn(1);
         when(wordStrategyFactory.createWordStrategy(fromLanguageId, tagId)).thenReturn(wordStrategy);
         
-        try {
-            service.getQuiz(fromLanguageId, toLanguageId, tagId, selectedNumWords);
-            Assert.fail("service should have thrown an exception");
-        } catch (CustomParameterizedException e) {
-            // normal
-        }
+        service.getQuiz(fromLanguageId, toLanguageId, tagId, selectedNumWords);
     }
 
     @Test

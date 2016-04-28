@@ -17,6 +17,7 @@ import org.dictionary.api.MultipleChoiceQuizAPI;
 import org.dictionary.api.TranslationAPI;
 import org.dictionary.api.WordAPI;
 import org.dictionary.repository.search.TranslationSearchRepository;
+import org.dictionary.repository.search.WordSearchRepository;
 import org.dictionary.web.rest.errors.CustomParameterizedException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -29,6 +30,7 @@ public class DefaultMultipleChoiceQuizServiceTest {
     private TranslationService translationService = mock(TranslationService.class);
     private TranslationSearchRepository translationSearchRepository = mock(TranslationSearchRepository.class);
     private WordStrategyFactory wordStrategyFactory = mock(WordStrategyFactory.class);
+    private WordSearchRepository wordSearchRepository = mock(WordSearchRepository.class);
 
     private MultipleChoiceQuizService service;
     private long fromLanguageId = 1;
@@ -42,7 +44,10 @@ public class DefaultMultipleChoiceQuizServiceTest {
         ReflectionTestUtils.setField(service, "translationService", translationService);
         ReflectionTestUtils.setField(service, "translationSearchRepository", translationSearchRepository);
         ReflectionTestUtils.setField(service, "wordStrategyFactory", wordStrategyFactory);
+        ReflectionTestUtils.setField(service, "wordSearchRepository", wordSearchRepository);
     }
+
+    // TODO try to use makers. Inits are a bit messy
 
     @Test
     public void testSetCorrectAnswers() {
@@ -111,6 +116,84 @@ public class DefaultMultipleChoiceQuizServiceTest {
 
         MultipleChoiceQuizAPI quiz = service.getQuiz(fromLanguageId, toLanguageId, noTagId,
                 Optional.of(1));
+        Assert.assertNotNull(quiz);
+        Assert.assertFalse(quiz.getQuestions().isEmpty());
+        Assert.assertEquals(1, quiz.getQuestions().size());
+        MultipleChoiceQuestionAPI question = quiz.getQuestions().get(0);
+        for (WordAPI word: question.getAnswers()) {
+            Assert.assertNotNull(word);
+        }
+    }
+
+    @Test
+    public void testGetQuizWithTagWordWith1Translation() {
+        Optional<Long> tagId = Optional.<Long> of(1L);
+        WordStrategy wordStrategy = mock(WordStrategy.class);
+        when(wordStrategy.countWords()).thenReturn(1);
+        when(wordStrategyFactory.createWordStrategy(fromLanguageId, tagId)).thenReturn(wordStrategy);
+
+        WordAPI word2 = mock(WordAPI.class);
+        when(word2.getId()).thenReturn(2L);
+        Optional<WordAPI> word2Opt = Optional.of(word2);
+
+        Set<Long> notInIds = new HashSet<Long>();
+        when(wordService.findRandomWord(fromLanguageId, tagId, notInIds)).thenReturn(word2Opt);
+
+        List<TranslationAPI> translations = new ArrayList<TranslationAPI>();
+        TranslationAPI translation1 = mock(TranslationAPI.class);
+        WordAPI answer = mock(WordAPI.class);
+        when(translation1.getFromWord()).thenReturn(answer);
+        translations.add(translation1);
+        when(translationService.findTranslations(word2.getId(), toLanguageId)).thenReturn(translations);
+
+        WordAPI possibleAnswer1 = mock(WordAPI.class);
+        Optional<WordAPI> possibleAnswer1Opt = Optional.of(possibleAnswer1);
+        when(wordService.findRandomWord(toLanguageId, noTagId)).thenReturn(possibleAnswer1Opt);
+
+        MultipleChoiceQuizAPI quiz = service.getQuiz(fromLanguageId, toLanguageId, tagId, Optional.of(1));
+        Assert.assertNotNull(quiz);
+        Assert.assertFalse(quiz.getQuestions().isEmpty());
+        Assert.assertEquals(1, quiz.getQuestions().size());
+        MultipleChoiceQuestionAPI question = quiz.getQuestions().get(0);
+        for (WordAPI word: question.getAnswers()) {
+            Assert.assertNotNull(word);
+        }
+    }
+
+    @Test
+    public void testGetQuizWithTagWordWithMoreThan1Translation() {
+        Long tagId = 1L;
+        WordStrategy wordStrategy = mock(WordStrategy.class);
+        when(wordStrategy.countWords()).thenReturn(1);
+        when(wordStrategyFactory.createWordStrategy(fromLanguageId, Optional.of(tagId))).thenReturn(wordStrategy);
+
+        WordAPI word2 = mock(WordAPI.class);
+        when(word2.getId()).thenReturn(2L);
+        Optional<WordAPI> word2Opt = Optional.of(word2);
+
+        Set<Long> notInIds = new HashSet<Long>();
+        when(wordService.findRandomWord(fromLanguageId, Optional.of(tagId), notInIds)).thenReturn(word2Opt);
+
+        List<TranslationAPI> translations = new ArrayList<TranslationAPI>();
+        TranslationAPI translation1 = mock(TranslationAPI.class);
+        WordAPI answer1 = mock(WordAPI.class);
+        when(answer1.getId()).thenReturn(11L);
+        when(translation1.getFromWord()).thenReturn(answer1);
+        translations.add(translation1);
+        TranslationAPI translation2 = mock(TranslationAPI.class);
+        WordAPI answer2 = mock(WordAPI.class);
+        when(answer2.getId()).thenReturn(12L);
+        when(translation2.getFromWord()).thenReturn(word2);
+        when(translation2.getToWord()).thenReturn(answer2);
+        translations.add(translation2);
+        when(translationService.findTranslations(word2.getId(), toLanguageId)).thenReturn(translations);
+        when(wordSearchRepository.countByIdAndTagsId(answer2.getId(), tagId)).thenReturn(1);
+
+        WordAPI possibleAnswer1 = mock(WordAPI.class);
+        Optional<WordAPI> possibleAnswer1Opt = Optional.of(possibleAnswer1);
+        when(wordService.findRandomWord(toLanguageId, noTagId)).thenReturn(possibleAnswer1Opt);
+
+        MultipleChoiceQuizAPI quiz = service.getQuiz(fromLanguageId, toLanguageId, Optional.of(tagId), Optional.of(1));
         Assert.assertNotNull(quiz);
         Assert.assertFalse(quiz.getQuestions().isEmpty());
         Assert.assertEquals(1, quiz.getQuestions().size());

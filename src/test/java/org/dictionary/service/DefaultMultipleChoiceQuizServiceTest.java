@@ -40,6 +40,7 @@ public class DefaultMultipleChoiceQuizServiceTest {
     @Before
     public void init() {
         service = new DefaultMultipleChoiceQuizService();
+        ((DefaultMultipleChoiceQuizService) service).setTotalNumOtherChoices(2);
         ReflectionTestUtils.setField(service, "wordService", wordService);
         ReflectionTestUtils.setField(service, "translationService", translationService);
         ReflectionTestUtils.setField(service, "translationSearchRepository", translationSearchRepository);
@@ -104,7 +105,10 @@ public class DefaultMultipleChoiceQuizServiceTest {
 
         WordAPI possibleAnswer1 = mock(WordAPI.class);
         Optional<WordAPI> possibleAnswer1Opt = Optional.of(possibleAnswer1);
-        when(wordService.findRandomWord(toLanguageId, noTagId)).thenReturn(possibleAnswer1Opt);
+        Set<Long> notInIds2 = new HashSet<Long>();
+        notInIds2.add(word1.getId());
+        notInIds2.add(word2.getId());
+        when(wordService.findRandomWord(toLanguageId, noTagId, notInIds2)).thenReturn(possibleAnswer1Opt);
 
         when(translationService.findTranslations(word1.getId(), toLanguageId)).thenReturn(Collections.emptyList());
         List<TranslationAPI> translations = new ArrayList<TranslationAPI>();
@@ -136,8 +140,8 @@ public class DefaultMultipleChoiceQuizServiceTest {
         when(word2.getId()).thenReturn(2L);
         Optional<WordAPI> word2Opt = Optional.of(word2);
 
+        when(wordService.findRandomWord(fromLanguageId, tagId, new HashSet<Long>())).thenReturn(word2Opt);
         Set<Long> notInIds = new HashSet<Long>();
-        when(wordService.findRandomWord(fromLanguageId, tagId, notInIds)).thenReturn(word2Opt);
 
         List<TranslationAPI> translations = new ArrayList<TranslationAPI>();
         TranslationAPI translation1 = mock(TranslationAPI.class);
@@ -148,13 +152,16 @@ public class DefaultMultipleChoiceQuizServiceTest {
 
         WordAPI possibleAnswer1 = mock(WordAPI.class);
         Optional<WordAPI> possibleAnswer1Opt = Optional.of(possibleAnswer1);
-        when(wordService.findRandomWord(toLanguageId, noTagId)).thenReturn(possibleAnswer1Opt);
+        notInIds.add(word2.getId());
+
+        when(wordService.findRandomWord(toLanguageId, tagId, notInIds)).thenReturn(possibleAnswer1Opt);
 
         MultipleChoiceQuizAPI quiz = service.getQuiz(fromLanguageId, toLanguageId, tagId, Optional.of(1));
         Assert.assertNotNull(quiz);
         Assert.assertFalse(quiz.getQuestions().isEmpty());
         Assert.assertEquals(1, quiz.getQuestions().size());
         MultipleChoiceQuestionAPI question = quiz.getQuestions().get(0);
+        Assert.assertEquals(2, question.getAnswers().size());
         for (WordAPI word: question.getAnswers()) {
             Assert.assertNotNull(word);
         }
@@ -171,8 +178,7 @@ public class DefaultMultipleChoiceQuizServiceTest {
         when(word2.getId()).thenReturn(2L);
         Optional<WordAPI> word2Opt = Optional.of(word2);
 
-        Set<Long> notInIds = new HashSet<Long>();
-        when(wordService.findRandomWord(fromLanguageId, Optional.of(tagId), notInIds)).thenReturn(word2Opt);
+        when(wordService.findRandomWord(fromLanguageId, Optional.of(tagId), new HashSet<Long>())).thenReturn(word2Opt);
 
         List<TranslationAPI> translations = new ArrayList<TranslationAPI>();
         TranslationAPI translation1 = mock(TranslationAPI.class);
@@ -191,7 +197,9 @@ public class DefaultMultipleChoiceQuizServiceTest {
 
         WordAPI possibleAnswer1 = mock(WordAPI.class);
         Optional<WordAPI> possibleAnswer1Opt = Optional.of(possibleAnswer1);
-        when(wordService.findRandomWord(toLanguageId, noTagId)).thenReturn(possibleAnswer1Opt);
+        Set<Long> notInIds = new HashSet<Long>();
+        notInIds.add(word2.getId());
+        when(wordService.findRandomWord(toLanguageId, Optional.of(tagId), notInIds)).thenReturn(possibleAnswer1Opt);
 
         MultipleChoiceQuizAPI quiz = service.getQuiz(fromLanguageId, toLanguageId, Optional.of(tagId), Optional.of(1));
         Assert.assertNotNull(quiz);

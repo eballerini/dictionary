@@ -19,6 +19,7 @@ import org.dictionary.repository.search.WordSearchRepository;
 import org.dictionary.web.rest.errors.CustomParameterizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 
 @Named
 public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizService {
@@ -26,7 +27,10 @@ public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizServi
     private final Logger log = LoggerFactory.getLogger(DefaultMultipleChoiceQuizService.class);
 
     private static final int DEFAULT_NUM_WORDS = 2;
-    public static final int NUM_CHOICES = 5;
+    public static final String DEFAULT_TOTAL_NUM_CHOICES = "5";
+
+    @Value(value = DEFAULT_TOTAL_NUM_CHOICES)
+    private int totalNumOtherChoices;
 
     @Inject
     private WordService wordService;
@@ -77,12 +81,15 @@ public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizServi
 
             // TODO make sure that the other words are not potential
             // translations
+            // TODO make sure that if there is a tag, other answers do have this
+            // tag as well
             List<WordAPI> otherWords = new ArrayList<WordAPI>();
-            for (int j = 0; j < NUM_CHOICES - 1; j++) {
+            for (int j = 0; j < totalNumOtherChoices - 1; j++) {
                 // TODO make sure all the other words are unique
-                Optional<WordAPI> otherWord = wordService.findRandomWord(toLanguageId, Optional.empty());
+                Optional<WordAPI> otherWord = wordService.findRandomWord(toLanguageId, tagId, wordIds);
                 if (otherWord.isPresent()) {
                     otherWords.add(otherWord.get());
+                    wordIds.add(otherWord.get().getId());
                 } else {
                     // TODO drop this current word
                 }
@@ -109,6 +116,10 @@ public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizServi
                 }
             }
         }
+    }
+
+    void setTotalNumOtherChoices(int totalNumOtherChoices) {
+        this.totalNumOtherChoices = totalNumOtherChoices;
     }
 
     private WordAPI findRandomWord(long fromLanguageId, Optional<Long> tagId, Set<Long> wordIds) {

@@ -3,6 +3,7 @@ package org.dictionary.service;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -31,10 +32,10 @@ public class DefaultWordServiceTest {
     public void testFindRandomWord() {
         initTest();
 
-        Set<Long> notInIds = new HashSet<Long>();
-        Optional<WordAPI> word1 = service.findRandomWord(languageId, tagId, notInIds);
+        Optional<WordAPI> word1 = service.findRandomWord(languageId, tagId, Collections.emptySet());
 
         Assert.assertTrue(word1.isPresent());
+        Set<Long> notInIds = new HashSet<Long>();
         notInIds.add(word1.get().getId());
 
         Optional<WordAPI> word2 = service.findRandomWord(languageId, tagId, notInIds);
@@ -46,6 +47,17 @@ public class DefaultWordServiceTest {
 
         Optional<WordAPI> word3 = service.findRandomWord(languageId, tagId, notInIds);
         Assert.assertFalse(word3.isPresent());
+    }
+
+    @Test
+    public void testCountWordIsZero() throws Exception {
+
+        WordStrategy wordStrategy = mock(WordStrategy.class);
+        when(wordStrategyFactory.createWordStrategy(languageId, tagId)).thenReturn(wordStrategy);
+        when(wordStrategy.countWords()).thenReturn(0);
+
+        Optional<WordAPI> word = service.findRandomWord(languageId, tagId, Collections.emptySet());
+        Assert.assertFalse(word.isPresent());
     }
 
     private void initTest() {

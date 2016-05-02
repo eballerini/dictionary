@@ -77,22 +77,20 @@ public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizServi
             } while (!foundWordWithTranslations);
             question.setWord(word);
             Set<WordAPI> answers = new HashSet<WordAPI>();
-            answers.add(getWordFromTranslations(translations, word, tagId));
+            WordAPI translatedWord = getWordFromTranslations(translations, word, tagId);
+            answers.add(translatedWord);
 
             // TODO make sure that the other words are not potential
             // translations
             // TODO make sure that if there is a tag, other answers do have this
             // tag as well
             List<WordAPI> otherWords = new ArrayList<WordAPI>();
+            Set<Long> notInAnswerIds = new HashSet<Long>();
+            notInAnswerIds.add(translatedWord.getId());
             for (int j = 0; j < totalNumOtherChoices - 1; j++) {
-                // TODO make sure all the other words are unique
-                Optional<WordAPI> otherWord = wordService.findRandomWord(toLanguageId, tagId, wordIds);
-                if (otherWord.isPresent()) {
-                    otherWords.add(otherWord.get());
-                    wordIds.add(otherWord.get().getId());
-                } else {
-                    // TODO drop this current word
-                }
+                WordAPI otherWord = findRandomWord(toLanguageId, tagId, notInAnswerIds);
+                otherWords.add(otherWord);
+                notInAnswerIds.add(otherWord.getId());
             }
             answers.addAll(otherWords);
             question.setAnswers(answers);

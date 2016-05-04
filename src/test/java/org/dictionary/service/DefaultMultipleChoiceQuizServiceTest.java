@@ -1,8 +1,10 @@
 package org.dictionary.service;
 
-//import static org.mockito.Matchers.any;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
-//import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -19,7 +21,6 @@ import org.dictionary.api.WordAPI;
 import org.dictionary.repository.search.TranslationSearchRepository;
 import org.dictionary.repository.search.WordSearchRepository;
 import org.dictionary.web.rest.errors.CustomParameterizedException;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -67,8 +68,8 @@ public class DefaultMultipleChoiceQuizServiceTest {
 
         service.setCorrectAnswers(quiz);
 
-        Assert.assertEquals(quiz.getQuestions().get(0).getCorrectAnswerWordId().longValue(), 12L);
-        Assert.assertEquals(quiz.getQuestions().get(1).getCorrectAnswerWordId().longValue(), 21L);
+        assertEquals(quiz.getQuestions().get(0).getCorrectAnswerWordId().longValue(), 12L);
+        assertEquals(quiz.getQuestions().get(1).getCorrectAnswerWordId().longValue(), 21L);
     }
 
     @Test(expected = CustomParameterizedException.class)
@@ -121,13 +122,13 @@ public class DefaultMultipleChoiceQuizServiceTest {
 
         MultipleChoiceQuizAPI quiz = service.getQuiz(fromLanguageId, toLanguageId, noTagId,
                 Optional.of(1));
-        Assert.assertNotNull(quiz);
-        Assert.assertFalse(quiz.getQuestions().isEmpty());
-        Assert.assertEquals(1, quiz.getQuestions().size());
+        assertNotNull(quiz);
+        assertFalse(quiz.getQuestions().isEmpty());
+        assertEquals(1, quiz.getQuestions().size());
         MultipleChoiceQuestionAPI question = quiz.getQuestions().get(0);
-        Assert.assertEquals(2, question.getAnswers().size());
+        assertEquals(2, question.getAnswers().size());
         for (WordAPI word: question.getAnswers()) {
-            Assert.assertNotNull(word);
+            assertNotNull(word);
         }
     }
 
@@ -160,13 +161,13 @@ public class DefaultMultipleChoiceQuizServiceTest {
         when(wordService.findRandomWord(toLanguageId, tagId, notInIds)).thenReturn(possibleAnswer1Opt);
 
         MultipleChoiceQuizAPI quiz = service.getQuiz(fromLanguageId, toLanguageId, tagId, Optional.of(1));
-        Assert.assertNotNull(quiz);
-        Assert.assertFalse(quiz.getQuestions().isEmpty());
-        Assert.assertEquals(1, quiz.getQuestions().size());
+        assertNotNull(quiz);
+        assertFalse(quiz.getQuestions().isEmpty());
+        assertEquals(1, quiz.getQuestions().size());
         MultipleChoiceQuestionAPI question = quiz.getQuestions().get(0);
-        Assert.assertEquals(2, question.getAnswers().size());
+        assertEquals(2, question.getAnswers().size());
         for (WordAPI word: question.getAnswers()) {
-            Assert.assertNotNull(word);
+            assertNotNull(word);
         }
     }
 
@@ -205,25 +206,25 @@ public class DefaultMultipleChoiceQuizServiceTest {
         when(wordService.findRandomWord(toLanguageId, Optional.of(tagId), notInIds)).thenReturn(possibleAnswer1Opt);
 
         MultipleChoiceQuizAPI quiz = service.getQuiz(fromLanguageId, toLanguageId, Optional.of(tagId), Optional.of(1));
-        Assert.assertNotNull(quiz);
-        Assert.assertFalse(quiz.getQuestions().isEmpty());
-        Assert.assertEquals(1, quiz.getQuestions().size());
+        assertNotNull(quiz);
+        assertFalse(quiz.getQuestions().isEmpty());
+        assertEquals(1, quiz.getQuestions().size());
         MultipleChoiceQuestionAPI question = quiz.getQuestions().get(0);
         for (WordAPI word: question.getAnswers()) {
-            Assert.assertNotNull(word);
+            assertNotNull(word);
         }
     }
 
     public void testGetQuizUniqueWords() {
-        Assert.fail("TODO");
+        fail("TODO");
     }
 
     public void testGetQuizOtherAnswersNotPotentialTranslations() {
-        Assert.fail("TODO");
+        fail("TODO");
     }
 
     public void testGetQuizAllAnswersAreUnique() {
-        Assert.fail("TODO");
+        fail("TODO");
     }
 
     public void testGetMultipleChoiceQuizAPI() {

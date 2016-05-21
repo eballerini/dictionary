@@ -55,48 +55,10 @@ public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizServi
             Optional<Integer> selectedNumWords) {
 
         int numWords = selectedNumWords.orElse(DEFAULT_NUM_WORDS);
-
         checkTotalNumWords(fromLanguageId, tagId, numWords);
 
         MultipleChoiceQuizAPI quiz = new MultipleChoiceQuizAPI();
-        List<MultipleChoiceQuestionAPI> questions = new ArrayList<MultipleChoiceQuestionAPI>();
-        Set<Long> wordIds = new HashSet<Long>();
-
-        for (int i = 0; i < numWords; i++) {
-            MultipleChoiceQuestionAPI question = new MultipleChoiceQuestionAPI();
-            boolean foundWordWithTranslations = false;
-            WordAPI word;
-            List<TranslationAPI> translations;
-            do {
-                word = findRandomWord(fromLanguageId, tagId, wordIds);
-                wordIds.add(word.getId());
-                translations = translationService.findTranslations(word.getId(), toLanguageId);
-                if (!translations.isEmpty()) {
-                    foundWordWithTranslations = true;
-                }
-            } while (!foundWordWithTranslations);
-            question.setWord(word);
-            Set<WordAPI> answers = new HashSet<WordAPI>();
-            WordAPI translatedWord = getWordFromTranslations(translations, word, tagId);
-            answers.add(translatedWord);
-
-            // TODO make sure that the other words are not potential
-            // translations
-            // TODO make sure that if there is a tag, other answers do have this
-            // tag as well
-            List<WordAPI> otherWords = new ArrayList<WordAPI>();
-            Set<Long> notInAnswerIds = new HashSet<Long>();
-            notInAnswerIds.add(translatedWord.getId());
-            for (int j = 0; j < totalNumOtherChoices - 1; j++) {
-                WordAPI otherWord = findRandomWord(toLanguageId, tagId, notInAnswerIds);
-                otherWords.add(otherWord);
-                notInAnswerIds.add(otherWord.getId());
-            }
-            answers.addAll(otherWords);
-            question.setAnswers(answers);
-
-            questions.add(question);
-        }
+        List<MultipleChoiceQuestionAPI> questions = prepareQuestions(fromLanguageId, toLanguageId, tagId, numWords);
         quiz.setQuestions(questions);
 
         return quiz;
@@ -120,6 +82,67 @@ public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizServi
         this.totalNumOtherChoices = totalNumOtherChoices;
     }
 
+    private List<MultipleChoiceQuestionAPI> prepareQuestions(long fromLanguageId, long toLanguageId,
+            Optional<Long> tagId, int numWords) {
+        List<MultipleChoiceQuestionAPI> questions = new ArrayList<MultipleChoiceQuestionAPI>();
+        Set<Long> notInWordIds = new HashSet<Long>();
+
+        for (int i = 0; i < numWords; i++) {
+            MultipleChoiceQuestionAPI question = new MultipleChoiceQuestionAPI();
+
+            List<TranslationAPI> translations = new ArrayList<>();
+            WordAPI word = pickRandomWord(fromLanguageId, toLanguageId, tagId, notInWordIds,
+                    translations);
+            question.setWord(word);
+            question.setAnswers(findAnswers(toLanguageId, tagId, translations, word));
+
+            questions.add(question);
+        }
+        return questions;
+    }
+
+    private Set<WordAPI> findAnswers(long toLanguageId, Optional<Long> tagId, List<TranslationAPI> translations,
+            WordAPI word) {
+        Set<WordAPI> answers = new HashSet<WordAPI>();
+
+        WordAPI correctAnswer = getTranslatedWordFromTranslations(translations, word, tagId);
+        answers.add(correctAnswer);
+
+        answers.addAll(findOtherWords(toLanguageId, tagId, correctAnswer));
+        return answers;
+    }
+
+    private List<WordAPI> findOtherWords(long toLanguageId, Optional<Long> tagId, WordAPI correctAnswer) {
+        // TODO make sure that the other words are not potential
+        // translations
+        // TODO make sure that if there is a tag, other answers do have this
+        // tag as well
+        List<WordAPI> otherWords = new ArrayList<WordAPI>();
+        Set<Long> notInAnswerIds = new HashSet<Long>();
+        notInAnswerIds.add(correctAnswer.getId());
+        for (int j = 0; j < totalNumOtherChoices - 1; j++) {
+            WordAPI otherWord = findRandomWord(toLanguageId, tagId, notInAnswerIds);
+            otherWords.add(otherWord);
+            notInAnswerIds.add(otherWord.getId());
+        }
+        return otherWords;
+    }
+
+    private WordAPI pickRandomWord(long fromLanguageId, long toLanguageId, Optional<Long> tagId, Set<Long> wordIds,
+            List<TranslationAPI> translations) {
+        boolean foundWordWithTranslations = false;
+        WordAPI word;
+        do {
+            word = findRandomWord(fromLanguageId, tagId, wordIds);
+            wordIds.add(word.getId());
+            translations.addAll(translationService.findTranslations(word.getId(), toLanguageId));
+            if (!translations.isEmpty()) {
+                foundWordWithTranslations = true;
+            }
+        } while (!foundWordWithTranslations);
+        return word;
+    }
+
     private WordAPI findRandomWord(long fromLanguageId, Optional<Long> tagId, Set<Long> wordIds) {
         Optional<WordAPI> word = wordService.findRandomWord(fromLanguageId, tagId, wordIds);
         if (!word.isPresent()) {
@@ -139,7 +162,7 @@ public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizServi
         return translationsCount;
     }
 
-    private WordAPI getWordFromTranslations(List<TranslationAPI> translations, WordAPI word, Optional<Long> tagId) {
+    private WordAPI getTranslatedWordFromTranslations(List<TranslationAPI> translations, WordAPI word, Optional<Long> tagId) {
         if (tagId.isPresent()) {
             if (translations.size() == 1) {
                 TranslationAPI uniqueTranslation = translations.get(0);

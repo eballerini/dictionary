@@ -44,6 +44,7 @@ angular.module('dictionaryApp')
                 
                 if ($scope.total_num_words > 0) {
                     MultipleChoiceQuizQuestionService.setWords(result.questions);    
+                    MultipleChoiceQuizQuestionService.setQuizResultId(result.quizResultId);
                     $state.go('multiple-choice-quiz.questions');
                 } else {
 

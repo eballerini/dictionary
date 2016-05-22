@@ -4,6 +4,7 @@ import java.util.List;
 
 public class MultipleChoiceQuizAPI {
 
+    private long quizResultId;
     private List<MultipleChoiceQuestionAPI> questions;
 
     public List<MultipleChoiceQuestionAPI> getQuestions() {
@@ -14,9 +15,12 @@ public class MultipleChoiceQuizAPI {
         this.questions = questions;
     }
 
-    @Override
-    public String toString() {
-        return "MultipleChoiceQuizAPI [questions=" + questions + "]";
+    public long getQuizResultId() {
+        return quizResultId;
+    }
+
+    public void setQuizResultId(long quizResultId) {
+        this.quizResultId = quizResultId;
     }
 
     @Override
@@ -24,6 +28,7 @@ public class MultipleChoiceQuizAPI {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((questions == null) ? 0 : questions.hashCode());
+        result = prime * result + (int) (quizResultId ^ (quizResultId >>> 32));
         return result;
     }
 
@@ -41,7 +46,14 @@ public class MultipleChoiceQuizAPI {
                 return false;
         } else if (!questions.equals(other.questions))
             return false;
+        if (quizResultId != other.quizResultId)
+            return false;
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "MultipleChoiceQuizAPI [quizResultId=" + quizResultId + ", questions=" + questions + "]";
     }
     
 }

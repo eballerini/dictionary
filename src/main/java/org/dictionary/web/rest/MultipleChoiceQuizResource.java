@@ -45,6 +45,11 @@ public class MultipleChoiceQuizResource {
         MultipleChoiceQuizAPI quiz = multipleChoiceQuizService.getQuiz(fromLanguageId, toLanguageId,
                 Optional.ofNullable(tagId), Optional.ofNullable(selectedNumWords));
 
+        long quizResultId = multipleChoiceQuizService.trackQuizResult(fromLanguageId, toLanguageId,
+                Optional.ofNullable(tagId), Optional.ofNullable(selectedNumWords));
+
+        quiz.setQuizResultId(quizResultId);
+
         return new ResponseEntity<>(quiz, HttpStatus.OK);
     }
     
@@ -58,6 +63,7 @@ public class MultipleChoiceQuizResource {
         log.debug("quiz: {}", quiz);
         
         multipleChoiceQuizService.setCorrectAnswers(quiz);
+        multipleChoiceQuizService.setNumCorrectAnswersInQuizResult(quiz);
 
         return new ResponseEntity<>(quiz, HttpStatus.OK);
     }

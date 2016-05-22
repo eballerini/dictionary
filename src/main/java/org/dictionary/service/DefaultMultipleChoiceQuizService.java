@@ -1,5 +1,6 @@
 package org.dictionary.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -14,6 +15,10 @@ import org.dictionary.api.MultipleChoiceQuestionAPI;
 import org.dictionary.api.MultipleChoiceQuizAPI;
 import org.dictionary.api.TranslationAPI;
 import org.dictionary.api.WordAPI;
+import org.dictionary.domain.QuizResult;
+import org.dictionary.repository.LanguageRepository;
+import org.dictionary.repository.QuizResultRepository;
+import org.dictionary.repository.TagRepository;
 import org.dictionary.repository.search.TranslationSearchRepository;
 import org.dictionary.repository.search.WordSearchRepository;
 import org.dictionary.web.rest.errors.CustomParameterizedException;
@@ -48,13 +53,22 @@ public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizServi
     @Inject
     private WordStrategyFactory wordStrategyFactory;
 
+    @Inject
+    private LanguageRepository languageRepository;
+
+    @Inject
+    private TagRepository tagRepository;
+
+    @Inject
+    private QuizResultRepository quizResultRepository;
+
     // TODO remove
     // http://localhost:3000/api/quiz/languages/1/to/2?selectedNumWords=3
     @Override
     public MultipleChoiceQuizAPI getQuiz(long fromLanguageId, long toLanguageId, Optional<Long> tagId,
             Optional<Integer> selectedNumWords) {
 
-        int numWords = selectedNumWords.orElse(DEFAULT_NUM_WORDS);
+        int numWords = getNumWordsOrDefault(selectedNumWords);
         checkTotalNumWords(fromLanguageId, tagId, numWords);
 
         MultipleChoiceQuizAPI quiz = new MultipleChoiceQuizAPI();
@@ -77,9 +91,41 @@ public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizServi
             }
         }
     }
+    
+    @Override
+    public long trackQuizResult(long fromLanguageId, long toLanguageId, Optional<Long> tagId,
+            Optional<Integer> selectedNumWords) {
+        QuizResult quizResult = new QuizResult();
+        quizResult.setNumWords(getNumWordsOrDefault(selectedNumWords));
+        quizResult.setFromLanguage(languageRepository.getOne(fromLanguageId));
+        quizResult.setToLanguage(languageRepository.getOne(toLanguageId));
+        quizResult.setDate(LocalDate.now());
+        if (tagId.isPresent()) {
+            quizResult.setTag(tagRepository.getOne(tagId.get()));
+        }
+        long id = quizResultRepository.save(quizResult).getId();
+        return id;
+    }
+
+    @Override
+    public void setNumCorrectAnswersInQuizResult(MultipleChoiceQuizAPI quiz) {
+        QuizResult quizResult = quizResultRepository.findOne(quiz.getQuizResultId());
+        int numCorrectAnswers = 0;
+        for (MultipleChoiceQuestionAPI question: quiz.getQuestions()) {
+            if (question.isAnswerCorrect()) {
+                numCorrectAnswers++;
+            }
+        }
+        quizResult.setNumCorrectAnswers(numCorrectAnswers);
+        quizResultRepository.save(quizResult);
+    }
 
     void setTotalNumOtherChoices(int totalNumOtherChoices) {
         this.totalNumOtherChoices = totalNumOtherChoices;
+    }
+
+    private int getNumWordsOrDefault(Optional<Integer> selectedNumWords) {
+        return selectedNumWords.orElse(DEFAULT_NUM_WORDS);
     }
 
     private List<MultipleChoiceQuestionAPI> prepareQuestions(long fromLanguageId, long toLanguageId,

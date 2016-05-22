@@ -41,6 +41,13 @@ public class MultipleChoiceQuestionAPI {
         this.correctAnswerWordId = correctAnswerWordId;
     }
 
+    public boolean isAnswerCorrect() {
+        if (correctAnswerWordId == null) {
+            return false;
+        }
+        return correctAnswerWordId.equals(answerWordId);
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;

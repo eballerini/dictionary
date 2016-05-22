@@ -7,6 +7,7 @@ angular.module('dictionaryApp')
         $scope.current_word_index = 0;
         $scope.total_num_words = 0;
         $scope.score = 0;
+        $scope.quizResultId = -1;
 
         function getWords() {
             $scope.words = MultipleChoiceQuizQuestionService.getWords();
@@ -18,10 +19,16 @@ angular.module('dictionaryApp')
             }
         }
 
+        function getQuizResultId() {
+            $scope.quizResultId = MultipleChoiceQuizQuestionService.getQuizResultId();
+        }
+
         getWords();
+        getQuizResultId();
 
         $scope.submit = function() {
             MultipleChoiceQuizQuestionService.setWords($scope.words);
+            MultipleChoiceQuizQuestionService.setQuizResultId($scope.quizResultId);
             MultipleChoiceQuizQuestionService.submit().then(function(result) {
                 $scope.received_answers = true;
                 $scope.loaded = false;

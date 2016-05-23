@@ -37,6 +37,9 @@
             <column name="date" type="date" defaultValueComputed="${now}">
                 <constraints nullable="false"/>
             </column>
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
         
         <addForeignKeyConstraint baseColumnNames="from_language_id"
@@ -56,6 +59,12 @@
                                  constraintName="fk_tag_id"
                                  referencedColumnNames="id"
                                  referencedTableName="tag"/>
+
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="quiz_result"
+                                 constraintName="fk_user_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="jhi_user"/>
 
     </changeSet>
 </databaseChangeLog>

@@ -47,6 +47,10 @@ public class QuizResult implements Serializable {
     @Column(name = "date", nullable = false)
     private LocalDate date;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     public Long getId() {
         return id;
     }
@@ -101,6 +105,14 @@ public class QuizResult implements Serializable {
 
     public void setDate(LocalDate date) {
         this.date = date;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
 }

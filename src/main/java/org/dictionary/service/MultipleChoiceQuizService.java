@@ -11,7 +11,7 @@ public interface MultipleChoiceQuizService {
 
     void setCorrectAnswers(MultipleChoiceQuizAPI quiz);
 
-    long trackQuizResult(long fromLanguageId, long toLanguageId, Optional<Long> tagId,
+    long trackQuizResult(String login, long fromLanguageId, long toLanguageId, Optional<Long> tagId,
             Optional<Integer> selectedNumWords);
 
     void setNumCorrectAnswersInQuizResult(MultipleChoiceQuizAPI quiz);

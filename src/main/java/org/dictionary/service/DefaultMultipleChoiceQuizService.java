@@ -16,9 +16,11 @@ import org.dictionary.api.MultipleChoiceQuizAPI;
 import org.dictionary.api.TranslationAPI;
 import org.dictionary.api.WordAPI;
 import org.dictionary.domain.QuizResult;
+import org.dictionary.domain.User;
 import org.dictionary.repository.LanguageRepository;
 import org.dictionary.repository.QuizResultRepository;
 import org.dictionary.repository.TagRepository;
+import org.dictionary.repository.UserRepository;
 import org.dictionary.repository.search.TranslationSearchRepository;
 import org.dictionary.repository.search.WordSearchRepository;
 import org.dictionary.web.rest.errors.CustomParameterizedException;
@@ -62,6 +64,9 @@ public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizServi
     @Inject
     private QuizResultRepository quizResultRepository;
 
+    @Inject
+    private UserRepository userRepository;
+
     // TODO remove
     // http://localhost:3000/api/quiz/languages/1/to/2?selectedNumWords=3
     @Override
@@ -93,9 +98,14 @@ public class DefaultMultipleChoiceQuizService implements MultipleChoiceQuizServi
     }
     
     @Override
-    public long trackQuizResult(long fromLanguageId, long toLanguageId, Optional<Long> tagId,
+    public long trackQuizResult(String login, long fromLanguageId, long toLanguageId, Optional<Long> tagId,
             Optional<Integer> selectedNumWords) {
+        Optional<User> user = userRepository.findOneByLogin(login);
+        if (!user.isPresent()) {
+            throw new RuntimeException("could not find user with login " + login);
+        }
         QuizResult quizResult = new QuizResult();
+        quizResult.setUser(user.get());
         quizResult.setNumWords(getNumWordsOrDefault(selectedNumWords));
         quizResult.setFromLanguage(languageRepository.getOne(fromLanguageId));
         quizResult.setToLanguage(languageRepository.getOne(toLanguageId));

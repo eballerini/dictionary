@@ -1,5 +1,6 @@
 package org.dictionary.web.rest;
 
+import java.security.Principal;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -34,7 +35,7 @@ public class MultipleChoiceQuizResource {
     @RequestMapping(value = "/quiz/languages/{fromLanguageId}/to/{toLanguageId}",
     method = RequestMethod.GET,
     produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<MultipleChoiceQuizAPI> getQuiz(@PathVariable Long fromLanguageId,
+    public ResponseEntity<MultipleChoiceQuizAPI> getQuiz(Principal principal, @PathVariable Long fromLanguageId,
             @PathVariable Long toLanguageId,
             @RequestParam(value = "tagId", required = false) Long tagId,
             @RequestParam(value = "selectedNumWords", required = false) Integer selectedNumWords) {
@@ -45,7 +46,8 @@ public class MultipleChoiceQuizResource {
         MultipleChoiceQuizAPI quiz = multipleChoiceQuizService.getQuiz(fromLanguageId, toLanguageId,
                 Optional.ofNullable(tagId), Optional.ofNullable(selectedNumWords));
 
-        long quizResultId = multipleChoiceQuizService.trackQuizResult(fromLanguageId, toLanguageId,
+        long quizResultId = multipleChoiceQuizService.trackQuizResult(principal.getName(), fromLanguageId,
+                toLanguageId,
                 Optional.ofNullable(tagId), Optional.ofNullable(selectedNumWords));
 
         quiz.setQuizResultId(quizResultId);

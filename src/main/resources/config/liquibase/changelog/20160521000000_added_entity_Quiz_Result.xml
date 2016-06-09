@@ -62,7 +62,7 @@
 
         <addForeignKeyConstraint baseColumnNames="user_id"
                                  baseTableName="quiz_result"
-                                 constraintName="fk_user_id"
+                                 constraintName="fk_quiz_result_user_id"
                                  referencedColumnNames="id"
                                  referencedTableName="jhi_user"/>
 

@@ -115,4 +115,11 @@ public class QuizResult implements Serializable {
         this.user = user;
     }
 
+    @Override
+    public String toString() {
+        return "QuizResult [id=" + id + ", numWords=" + numWords + ", numCorrectAnswers=" + numCorrectAnswers
+                + ", fromLanguage=" + fromLanguage + ", toLanguage=" + toLanguage + ", tag=" + tag + ", date=" + date
+                + ", user=" + user + "]";
+    }
+
 }

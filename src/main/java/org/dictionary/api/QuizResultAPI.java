@@ -68,14 +68,6 @@ public class QuizResultAPI {
         this.date = date;
     }
 
-    public TagAPI getTagAPI() {
-        return tagAPI;
-    }
-
-    public void setTagAPI(TagAPI tagAPI) {
-        this.tagAPI = tagAPI;
-    }
-
     @Override
     public String toString() {
         return "QuizResultAPI [id=" + id + ", numWords=" + numWords + ", numCorrectAnswers=" + numCorrectAnswers

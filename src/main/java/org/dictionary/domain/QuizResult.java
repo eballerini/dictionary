@@ -12,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.dictionary.api.QuizResultAPI;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -120,6 +121,18 @@ public class QuizResult implements Serializable {
         return "QuizResult [id=" + id + ", numWords=" + numWords + ", numCorrectAnswers=" + numCorrectAnswers
                 + ", fromLanguage=" + fromLanguage + ", toLanguage=" + toLanguage + ", tag=" + tag + ", date=" + date
                 + ", user=" + user + "]";
+    }
+
+    public QuizResultAPI toAPI() {
+        QuizResultAPI quizResultAPI = new QuizResultAPI();
+        quizResultAPI.setDate(date);
+        quizResultAPI.setFromLanguage(fromLanguage.toAPI());
+        quizResultAPI.setToLanguage(toLanguage.toAPI());
+        quizResultAPI.setId(id);
+        quizResultAPI.setNumCorrectAnswers(numCorrectAnswers);
+        quizResultAPI.setNumWords(numWords);
+        quizResultAPI.setTag(tag.toAPI());
+        return quizResultAPI;
     }
 
 }

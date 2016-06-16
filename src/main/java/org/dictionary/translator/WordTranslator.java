@@ -5,6 +5,7 @@ import org.dictionary.domain.Word;
 
 public class WordTranslator {
 
+    // TODO move this to the Word class
     public static WordAPI toAPI(Word word) {
         if (word == null) {
             return null;

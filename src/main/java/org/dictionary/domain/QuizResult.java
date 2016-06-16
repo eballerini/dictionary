@@ -131,7 +131,9 @@ public class QuizResult implements Serializable {
         quizResultAPI.setId(id);
         quizResultAPI.setNumCorrectAnswers(numCorrectAnswers);
         quizResultAPI.setNumWords(numWords);
-        quizResultAPI.setTag(tag.toAPI());
+        if (tag != null) {
+            quizResultAPI.setTag(tag.toAPI());
+        }
         return quizResultAPI;
     }
 

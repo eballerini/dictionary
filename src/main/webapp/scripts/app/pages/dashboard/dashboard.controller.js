@@ -4,13 +4,22 @@ angular.module('dictionaryApp')
     .controller('DashboardController', function ($scope, $state, Dashboard) {
       
         $scope.dashboard = null;
+        $scope.dashboardstats = null;
 
-        $scope.load = function() {
+        $scope.loadAll = function() {
+          $scope.loadDashboard();
+          $scope.loadDashboardStats();
+        };
+
+        $scope.loadDashboard = function() {
         	Dashboard.query(function(result) {
                $scope.dashboard = result;
             });
         };
         
-        $scope.load();
+        $scope.loadDashboardStats = function() {
+        };
+
+        $scope.loadAll();
 
     });

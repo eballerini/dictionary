@@ -1,3 +1,8 @@
+# Description
+
+dictionary is a simple web app that I implemented using JHipser (see below for details) in order to help me learn Cantonese. The idea is to have quizzes that allow to challenge one's knowledge and track progress.
+This is still WIP.
+
 # Developing dictionary
 
 This application was generated using JHipster, you can find documentation and help at [https://jhipster.github.io](https://jhipster.github.io).
